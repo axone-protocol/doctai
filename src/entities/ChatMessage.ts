@@ -16,9 +16,9 @@ export class ChatMessage {
     @PrimaryGeneratedColumn("uuid")
     id!: string;
 
-    @ManyToOne("Chat", "ChatMessage")
+    @ManyToOne("Chat", "chatMessages")
     @JoinColumn({ name: "chatId" })
-    Chat!: Chat;
+    chat!: Chat;
 
     @Column()
     chatId!: string;
