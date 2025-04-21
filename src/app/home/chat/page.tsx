@@ -21,16 +21,16 @@ export default function ChatPage() {
     const [hasCreatedChat, setHasCreatedChat] = useState(false);
 
     useEffect(() => {
-        if (!user || hasCreatedChat) return;
+        if (!user?.id || hasCreatedChat) return;
         (async () => {
             const chat = await createEntity<Chat>(Chat.name, {
                 title: "New Chat",
-                userId: user.id
+                userId: user.id,
             });
             setChatId(chat.id);
             setHasCreatedChat(true);
         })();
-    }, [user, hasCreatedChat]);
+    }, [user?.id, hasCreatedChat]);
 
     const sendMessage = async () => {
         if (!input.trim() || !chatId) return;
