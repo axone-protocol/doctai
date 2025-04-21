@@ -75,10 +75,9 @@ export default function LoginPage() {
                 <Image
                     src="/logo.png"
                     alt="DoctAI Logo"
-                    width={100}
-                    height={100}
+                    width={250}
+                    height={250}
                 />
-                <h1 className={styles.title}>DoctAI</h1>
                 <p className={styles.subtitle}>
                     DoctAI is an AI-powered analysis platform for cardiac
                     datasets. Connect your wallet to get started.
