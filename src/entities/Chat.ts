@@ -21,15 +21,15 @@ export class Chat {
     @Column()
     title!: string;
 
-    @ManyToOne("User", "Chat")
+    @ManyToOne("User", "chat")
     @JoinColumn({ name: "userId" })
-    User!: User;
+    user!: User;
 
     @Column()
     userId!: string;
 
-    @OneToMany("ChatMessage", "Chat", { cascade: true })
-    ChatMessage!: ChatMessage[];
+    @OneToMany("ChatMessage", "chat", { cascade: true })
+    chatMessages!: ChatMessage[];
 
     @CreateDateColumn()
     createdAt!: Date;

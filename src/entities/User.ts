@@ -22,7 +22,7 @@ export class User {
     userType!: "contributor" | "guest";
 
     @OneToMany("Chat", "User")
-    Chat!: Chat[];
+    chats!: Chat[];
 
     @CreateDateColumn()
     createdAt!: Date;
