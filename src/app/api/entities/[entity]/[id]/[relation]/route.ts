@@ -2,12 +2,10 @@
 import { getEntityHandler } from "@/lib/backend/BaseEntityServer";
 import { PostgreSQLDatabaseService } from "@/lib/backend/PostgreSQLDatabaseService";
 import "@/lib/backend/registerAllEntities";
+import { getEntityNameFromRelationProperty, getRelationPropertyName } from "@/lib/relations";
 import { NextRequest, NextResponse } from "next/server";
 
 // Helper
-function capitalize(str: string) {
-    return str.charAt(0).toUpperCase() + str.slice(1);
-}
 
 export async function GET(
     request: NextRequest,
@@ -17,18 +15,29 @@ export async function GET(
     try {
         const db = await PostgreSQLDatabaseService.getDataSource();
         const repo = db.getRepository(entity);
+        const relationProp = getRelationPropertyName(entity, relation);
         //---------------------------------
         const record = await repo.findOne({
             where: { id },
-            relations: [relation], // el valor ya viene de la URL como string "messages"
+            relations: [relationProp],
         });
         //---------------------------------
         if (!record || !(relation in record)) {
             return NextResponse.json({ error: "Not found" }, { status: 404 });
         }
         //---------------------------------
-        const related = (record as any)[relation];
-        const relatedHandler = getEntityHandler(relation);
+        const related = (record as any)[relationProp];
+        const relatedEntity = getEntityNameFromRelationProperty(
+            entity,
+            relation
+        );
+        if (!relatedEntity) {
+            return NextResponse.json(
+                { error: `Unknown relation: ${relation}` },
+                { status: 400 }
+            );
+        }
+        const relatedHandler = getEntityHandler(relatedEntity);
         //---------------------------------
         const output = Array.isArray(related)
             ? related.map((r: any) =>
