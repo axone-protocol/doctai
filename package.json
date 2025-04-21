@@ -9,10 +9,20 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@cosmjs/cosmwasm-stargate": "^0.33.1",
+    "@cosmjs/crypto": "^0.33.1",
+    "@cosmjs/encoding": "^0.33.1",
+    "@keplr-wallet/cosmos": "^0.12.219",
     "next": "15.2.5",
+    "next-auth": "^4.24.11",
+    "pg": "^8.14.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "sass": "^1.86.3"
+    "reflect-metadata": "^0.2.2",
+    "sass": "^1.86.3",
+    "secp256k1": "^5.0.1",
+    "typeorm": "^0.3.22",
+    "zustand": "^5.0.3"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -20,8 +30,11 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/secp256k1": "^4.0.6",
     "eslint": "^9",
     "eslint-config-next": "15.2.5",
+    "ignore-loader": "^0.1.2",
+    "null-loader": "^4.0.1",
     "typescript": "^5"
   }
 }
