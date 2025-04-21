@@ -4,6 +4,7 @@ export interface BaseEntityServer<T> {
     entityName: string;
     toDTO(entity: T): any;
     fromDTO(input: any): T;
+    relationPropertyNameFor?: (relatedEntityName: string) => string;
 }
 
 const entityRegistry: Map<string, BaseEntityServer<any>> = new Map();
