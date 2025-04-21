@@ -4,6 +4,7 @@ import { useParams } from "next/navigation";
 import { fetchEntityRelation } from "@/lib/frontend/api";
 import { Chat } from "@/entities/Chat";
 import { ChatMessage } from "@/entities/ChatMessage";
+import { getRelationKey } from "@/lib/relations";
 
 export default function ChatDetailPage() {
     const { id } = useParams();
@@ -14,12 +15,12 @@ export default function ChatDetailPage() {
 
         const loadMessages = async () => {
             try {
-                await fetchEntityRelation<ChatMessage>(
+                const msgs = await fetchEntityRelation<ChatMessage>(
                     Chat.name,
                     id as string,
-                    ChatMessage.name,
+                    getRelationKey(Chat, ChatMessage)
                 );
-                setMessages(messages);
+                setMessages(msgs);
             } catch (error) {
                 console.error("Failed to fetch chat messages:", error);
             }

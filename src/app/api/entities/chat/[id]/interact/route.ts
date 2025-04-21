@@ -3,6 +3,7 @@ import { Chat } from "@/entities/Chat";
 import { ChatMessage } from "@/entities/ChatMessage";
 import { User } from "@/entities/User";
 import { PostgreSQLDatabaseService } from "@/lib/backend/PostgreSQLDatabaseService";
+import { getRelationPropertyName } from "@/lib/relations";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(
@@ -17,7 +18,7 @@ export async function POST(
     try {
         const chat = await repoChat.findOne({
             where: { id: chatId },
-            relations: [User.name],
+            relations: [getRelationPropertyName(Chat.name, User.name)],
         });
         if (!chat) {
             return NextResponse.json(
