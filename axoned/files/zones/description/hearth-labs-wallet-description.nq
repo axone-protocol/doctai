@@ -1,0 +1,17 @@
+<did:key:zQ3shmDoRRiFmNzwDrnV2iPdgA9xaoAYsSq8GC9tGHsNL4R7a> <https://w3id.org/axone/ontology/v4/schema/credential/zone/description/hasDescription> "Hearth Labs is a governed zone focused on collaborative analysis of cardiac data through AI agents." .
+<did:key:zQ3shmDoRRiFmNzwDrnV2iPdgA9xaoAYsSq8GC9tGHsNL4R7a> <https://w3id.org/axone/ontology/v4/schema/credential/zone/description/hasTag> "AI" .
+<did:key:zQ3shmDoRRiFmNzwDrnV2iPdgA9xaoAYsSq8GC9tGHsNL4R7a> <https://w3id.org/axone/ontology/v4/schema/credential/zone/description/hasTag> "Cardiology" .
+<did:key:zQ3shmDoRRiFmNzwDrnV2iPdgA9xaoAYsSq8GC9tGHsNL4R7a> <https://w3id.org/axone/ontology/v4/schema/credential/zone/description/hasTag> "Health" .
+<did:key:zQ3shmDoRRiFmNzwDrnV2iPdgA9xaoAYsSq8GC9tGHsNL4R7a> <https://w3id.org/axone/ontology/v4/schema/credential/zone/description/hasTitle> "Hearth Labs" .
+<did:key:zQ3shmDoRRiFmNzwDrnV2iPdgA9xaoAYsSq8GC9tGHsNL4R7a> <https://w3id.org/axone/ontology/v4/schema/credential/zone/description/hasTopic> <https://w3id.org/axone/ontology/v4/thesaurus/topic/health> .
+<https://w3id.org/axone/ontology/v4/schema/credential/zone/description/7642a2c7-d54b-4e4a-a57c-4cc76bdd5c25> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/axone/ontology/v4/schema/credential/zone/description/ZoneDescriptionCredential> .
+<https://w3id.org/axone/ontology/v4/schema/credential/zone/description/7642a2c7-d54b-4e4a-a57c-4cc76bdd5c25> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.w3.org/2018/credentials#VerifiableCredential> .
+<https://w3id.org/axone/ontology/v4/schema/credential/zone/description/7642a2c7-d54b-4e4a-a57c-4cc76bdd5c25> <https://w3id.org/security#proof> _:b0 .
+<https://w3id.org/axone/ontology/v4/schema/credential/zone/description/7642a2c7-d54b-4e4a-a57c-4cc76bdd5c25> <https://www.w3.org/2018/credentials#credentialSubject> <did:key:zQ3shmDoRRiFmNzwDrnV2iPdgA9xaoAYsSq8GC9tGHsNL4R7a> .
+<https://w3id.org/axone/ontology/v4/schema/credential/zone/description/7642a2c7-d54b-4e4a-a57c-4cc76bdd5c25> <https://www.w3.org/2018/credentials#issuanceDate> "2025-04-21T19:30:58Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
+<https://w3id.org/axone/ontology/v4/schema/credential/zone/description/7642a2c7-d54b-4e4a-a57c-4cc76bdd5c25> <https://www.w3.org/2018/credentials#issuer> <did:key:zQ3shN45CkRnjackWYwM191q2bNanAYeP1ZvxoAEPaV4ZpgZo> .
+_:b1 <http://purl.org/dc/terms/created> "2025-04-21T16:31:40.183616317-03:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> _:b0 .
+_:b1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/security#EcdsaSecp256k1Signature2019> _:b0 .
+_:b1 <https://w3id.org/security#jws> "eyJhbGciOiJ1bmtub3duIiwiYjY0IjpmYWxzZSwiY3JpdCI6WyJiNjQiXX0..NgYnLYlsCKUJweLC3sLOGnzkgSvCG3DmLkMvmNo4JAIQKz8e42zXDY6Wl_Qc3gjxL0brm9lZZjWxyFP774htCQ" _:b0 .
+_:b1 <https://w3id.org/security#proofPurpose> <https://w3id.org/security#assertionMethod> _:b0 .
+_:b1 <https://w3id.org/security#verificationMethod> <did:key:zQ3shN45CkRnjackWYwM191q2bNanAYeP1ZvxoAEPaV4ZpgZo#zQ3shN45CkRnjackWYwM191q2bNanAYeP1ZvxoAEPaV4ZpgZo> _:b0 .
