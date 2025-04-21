@@ -1,10 +1,13 @@
-import ConnectButton from '@/components/ConnectButton';
+"use client";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
-export default function Home() {
-  return (
-    <main style={{ padding: '2rem' }}>
-      <h1>Welcome to DoctAI</h1>
-      <ConnectButton />
-    </main>
-  );
+export default function IndexPage() {
+    const router = useRouter();
+
+    useEffect(() => {
+        router.replace("/login");
+    }, [router]);
+
+    return null;
 }
