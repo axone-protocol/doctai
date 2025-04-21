@@ -1,59 +1,75 @@
-// lib/keplr.ts
+import { Secp256k1, Secp256k1Signature } from "@cosmjs/crypto";
+import { sha256 } from "@cosmjs/crypto";
+import { CHAIN_ID } from "./constants";
+import { encodeSecp256k1Pubkey, verifyADR36Amino } from "@keplr-wallet/cosmos";
+import { fromBase64 } from "@cosmjs/encoding";
 
-export const connectKeplr = async (chainId: string = "axone-dentrite-1") => {
-    // Access the Keplr object with our extended window type
-    const keplrWindow = window as KeplrWindow;
-
-    if (!keplrWindow.keplr) {
-        alert("Please install Keplr extension!");
-        return null;
+export const getKeplr = (): Keplr => {
+    // Check if the window object has the keplr property
+    if (typeof window !== "undefined" && "keplr" in window) {
+        const keplrWindow = window as KeplrWindow;
+        if (!keplrWindow.keplr) {
+            alert("Please install Keplr extension!");
+            throw new Error("Keplr extension is not installed");
+        } else {
+            return keplrWindow.keplr;
+        }
     }
+    throw new Error("Keplr is only available in the browser context");
+};
 
+export const connectKeplr = async () => {
+    // Access the Keplr object with our extended window type
     try {
+        const keplr = getKeplr();
         // Enable the chain in Keplr
-        await keplrWindow.keplr.enable(chainId);
-
+        await keplr.enable(CHAIN_ID);
         // Get the offline signer for this chain
-        const offlineSigner = keplrWindow.keplr.getOfflineSigner(chainId);
-
+        const offlineSigner = keplr.getOfflineSigner(CHAIN_ID);
         // Get the user's account
         const accounts = await offlineSigner.getAccounts();
-
         return {
             address: accounts[0].address,
             offlineSigner,
         };
     } catch (error) {
+        if (error instanceof Error) {
+            if (error.message.includes("modular chain info")) {
+                alert(
+                    "Keplr doesn't recognize the Axone network. Please check network configuration."
+                );
+            } else if (error.message.includes("Request rejected")) {
+                alert(
+                    "Connection request was rejected. Please try again and approve the connection."
+                );
+            } else {
+                alert(`Failed to connect: ${error.message}`);
+            }
+        } else {
+            alert("Failed to connect to Keplr. Please try again.");
+        }
         console.error("Error connecting to Keplr:", error);
-        alert("Failed to connect to Keplr. Please try again.");
-        return null;
+        return undefined;
     }
 };
 
-// Function to send tokens using Keplr
-/* eslint-disable @typescript-eslint/no-unused-vars */
-export const sendTokens = async (
-    recipientAddress: string,
-    amount: string,
-    _denom: string = "uaxon",
-    chainId: string = "axone-dentrite-1"
-) => {
-    const keplrWindow = window as KeplrWindow;
-
-    if (!keplrWindow.keplr) {
-        alert("Please install Keplr extension!");
-        return null;
-    }
-
-    try {
-        await keplrWindow.keplr.enable(chainId);
-
-        alert("Tokens sent successfully!");
-        return true;
-    } catch (error) {
-        console.error("Error sending tokens:", error);
-        alert("Failed to send tokens. Please try again.");
-        return null;
-    }
-};
-/* eslint-enable @typescript-eslint/no-unused-vars */
+export function verifyADR36Signature({
+    message,
+    address,
+    pubKeyBase64,
+    signatureBase64,
+}: {
+    message: string;
+    address: string;
+    pubKeyBase64: string;
+    signatureBase64: string;
+}): boolean {
+    return verifyADR36Amino(
+        "axone", // Bech32 prefix only, not the full address
+        address, // full address
+        message,
+        fromBase64(pubKeyBase64),
+        fromBase64(signatureBase64),
+        "secp256k1"
+    );
+}
