@@ -20,7 +20,7 @@
     - [Step 3: Submit Prolog Program to Blockchain](#step-3-submit-prolog-program-to-blockchain)
     - [Step 4: Create Governance Credentials](#step-4-create-governance-credentials)
     - [Step 5: Sign and Submit Governance Credentials](#step-5-sign-and-submit-governance-credentials)
-    - [Step 6: Sign and Submit Governance Credentials](#step-6-sign-and-submit-governance-credentials)
+    - [Step 7: Testing](#step-7-testing)
 
 ## Set Env
 
@@ -519,7 +519,7 @@ echo "ZONE_GOV_CRED_TX_HASH: $ZONE_GOV_CRED_TX_HASH"
 echo "ZONE_GOV_CRED_TX_HASH: $ZONE_GOV_CRED_TX_HASH" >> $LOG_PATH/implementation.log
 ```
 
-### Step 6: Sign and Submit Governance Credentials
+### Step 7: Testing
 
 ```bash
 # Identidad a testear
