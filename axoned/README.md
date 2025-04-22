@@ -2,20 +2,21 @@
 # README
 
 ## Table of Contents
+
 - [README](#readme)
   - [Table of Contents](#table-of-contents)
   - [Set Env](#set-env)
   - [Set Smart Contracts](#set-smart-contracts)
-    - [Objectarium:](#objectarium)
+    - [Objectarium](#objectarium)
     - [Dataverse](#dataverse)
   - [Create Hearth Labs Zone](#create-hearth-labs-zone)
-    - [Step 1: Env](#step-1-env)
+    - [Step 1: Set Env for Zone DID Description](#step-1-set-env-for-zone-did-description)
     - [Step 2: Key and DID Creation](#step-2-key-and-did-creation)
     - [Step 3: Create Credentials](#step-3-create-credentials)
     - [Step 4: Sign Credentials](#step-4-sign-credentials)
     - [Step 5: Register in Blockchain](#step-5-register-in-blockchain)
   - [Create Hearth Labs Governance](#create-hearth-labs-governance)
-    - [Step 1: Env](#step-1-env-1)
+    - [Step 1: Set Env for Zone DID Governance](#step-1-set-env-for-zone-did-governance)
     - [Step 2: Create Governance Rules](#step-2-create-governance-rules)
     - [Step 3: Submit Prolog Program to Blockchain](#step-3-submit-prolog-program-to-blockchain)
     - [Step 4: Create Governance Credentials](#step-4-create-governance-credentials)
@@ -88,7 +89,6 @@ grpcurl -plaintext $AXONE_NODE_GRCP describe cosmwasm.wasm.v1.Query.SmartContrac
 # grpcurl -plaintext \
 #   "$AXONE_NODE_GRCP/cosmwasm/wasm/v1/contract/axone1uvqk5vj9vn4gjemrp0myz4ku49aaemulgaqw7pfe0nuvfwp3gukqxf4l4g/smart/$QUERY_DATA_URL_SAFE"
 
-
 # Contract Codes
 
 export CODE_ID_DATAVERSE=4
@@ -156,15 +156,14 @@ echo "ISSUER_ACCOUNT_NUMBER: $ISSUER_ACCOUNT_NUMBER"
 echo "ISSUER_ACCOUNT_NUMBER: $ISSUER_ACCOUNT_NUMBER" >> $LOG_PATH/implementation.log
 echo "ISSUER_SEQUENCE: $ISSUER_SEQUENCE"
 echo "ISSUER_SEQUENCE: $ISSUER_SEQUENCE" >> $LOG_PATH/implementation.log
-
 ```
 
 ## Set Smart Contracts
 
-### Objectarium:
+### Objectarium
 
 ```bash
-
+=
 export OBJECTARIUM_LABEL="my-objectarium"
 echo "OBJECTARIUM_LABEL: $OBJECTARIUM_LABEL"
 echo "OBJECTARIUM_LABEL: $OBJECTARIUM_LABEL" >> $LOG_PATH/implementation.log
@@ -193,7 +192,6 @@ echo "OBJECTARIUM_ADDR: $OBJECTARIUM_ADDR" >> $LOG_PATH/implementation.log
 ### Dataverse
 
 ```bash
-
 export DATAVERSE_LABEL="my-dataverse"
 echo "DATAVERSE_LABEL: $DATAVERSE_LABEL" 
 echo "DATAVERSE_LABEL: $DATAVERSE_LABEL" >> $LOG_PATH/implementation.log
@@ -248,11 +246,11 @@ $AXONED_PATH --node $AXONE_NODE query logic params -o json \
 
 # Verify all DIDs
 $AXONED_PATH keys list $KEYRING_BACKEND
-
 ```
+
 ## Create Hearth Labs Zone
 
-### Step 1: Env
+### Step 1: Set Env for Zone DID Description
 
 ```bash
 export ZONES_PATH=$WORK_DIR_AXONE/files/zones/description
@@ -297,12 +295,11 @@ echo "ZONE_DID: $ZONE_DID" >> $LOG_PATH/implementation.log
 
 ### Step 3: Create Credentials
 
-https://docs.axone.xyz/ontology/schemas/credential-zone-description
+[Schema](https://docs.axone.xyz/ontology/schemas/credential-zone-description)
 
 Create the zone description using the credential-zone-description template:
 
 ```bash
-
 export ZONE_DESCRIPTION_ID=$(uuidgen)
 echo "ZONE_DESCRIPTION_ID: $ZONE_DESCRIPTION_ID"
 echo "ZONE_DESCRIPTION_ID: $ZONE_DESCRIPTION_ID" >> $LOG_PATH/implementation.log
@@ -333,7 +330,6 @@ cat <<EOF | envsubst > $ZONES_PATH/$ZONE_WALLET-description.jsonld
   }
 }
 EOF
-
 ```
 
 ### Step 4: Sign Credentials
@@ -344,7 +340,6 @@ Sign and encode the zone credentials:
 # Sign the zone credential
 $AXONED_PATH credential sign $ZONES_PATH/$ZONE_WALLET-description.jsonld \
     $KEYRING_BACKEND --from $ISSUER_WALLET | jsonld toRdf -q - > $ZONES_PATH/$ZONE_WALLET-description.nq
-
 ```
 
 ### Step 5: Register in Blockchain
@@ -352,7 +347,6 @@ $AXONED_PATH credential sign $ZONES_PATH/$ZONE_WALLET-description.jsonld \
 Submit the signed zone description to the blockchain:
 
 ```bash
-
 # Submit zone description to blockchain
 export ZONE_DESCRIPTION_TX_HASH=$($AXONED_PATH tx wasm execute $DATAVERSE_ADDR \
     "{\"submit_claims\":{\
@@ -371,12 +365,11 @@ wait_and_check_tx "$ZONE_DESCRIPTION_TX_HASH" "$AXONE_NODE" "$AXONED_PATH"
 
 echo "ZONE_DESCRIPTION_TX_HASH: $ZONE_DESCRIPTION_TX_HASH" 
 echo "ZONE_DESCRIPTION_TX_HASH: $ZONE_DESCRIPTION_TX_HASH" >> $LOG_PATH/implementation.log
-
 ```
 
 ## Create Hearth Labs Governance
 
-### Step 1: Env
+### Step 1: Set Env for Zone DID Governance
 
 ```bash
 export ZONES_GOV_PATH=$WORK_DIR_AXONE/files/zones/governance
@@ -454,7 +447,6 @@ export ZONES_GOV_ADDR=$($AXONED_PATH query tx $ZONES_GOV_SUBMIT_PROGRAM_TX_HASH 
 
 echo "ZONES_GOV_ADDR: $ZONES_GOV_ADDR"
 echo "ZONES_GOV_ADDR: $ZONES_GOV_ADDR" >> $LOG_PATH/implementation.log
-
 ```
 
 ### Step 4: Create Governance Credentials
@@ -462,7 +454,6 @@ echo "ZONES_GOV_ADDR: $ZONES_GOV_ADDR" >> $LOG_PATH/implementation.log
 Create the governance credential file:
 
 ```bash
-
 export ZONE_GOV_CRED_ID=$(uuidgen)
 echo "ZONE_GOV_CRED_ID: $ZONE_GOV_CRED_ID"
 echo "ZONE_GOV_CRED_ID: $ZONE_GOV_CRED_ID" >> $LOG_PATH/implementation.log
@@ -567,6 +558,4 @@ export RESULT_RPC=$($AXONED_PATH query wasm contract-state smart $LAW_STONE_ADDR
 
 # Mostrar formateado
 echo "$RESULT_RPC" | jq
-
 ```
-
