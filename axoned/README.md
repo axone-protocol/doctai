@@ -44,23 +44,23 @@ source $WORK_DIR_AXONE/scripts/helpers.sh
 export MAYOR=4
 
 # Node connection
-export AXONE_NODE=https://api.dentrite.axone.xyz:443/rpc
-export AXONE_NODE_GRCP=axone-testnet-grpc.polkachu.com:17690
-# export AXONE_NODE_GRCP=grpc.dentrite.axone.xyz:443
+export AXONE_NODE_RPC=https://api.dentrite.axone.xyz:443/rpc
+export AXONE_NODE_GRPP=axone-testnet-grpc.polkachu.com:17690
+# export AXONE_NODE_GRPP=grpc.dentrite.axone.xyz:443
 
 
-# export AXONE_NODE=http://127.0.0.1:26657
-# export AXONE_NODE_GRCP=localhost:9090
+# export AXONE_NODE_RPC=http://127.0.0.1:26657
+# export AXONE_NODE_GRPP=localhost:9090
 
-export NETWORK=$(curl $AXONE_NODE/status | jq -r '.result.node_info.network')
+export NETWORK=$(curl $AXONE_NODE_RPC/status | jq -r '.result.node_info.network')
 
 # Install grpcurl
 # curl -sSL "https://github.com/fullstorydev/grpcurl/releases/download/v1.9.3/grpcurl_1.9.3_linux_x86_64.tar.gz" | sudo tar -xz -C /usr/local/bin
 
 # test grp
-grpcurl -plaintext $AXONE_NODE_GRCP list
-grpcurl -plaintext $AXONE_NODE_GRCP list cosmwasm.wasm.v1.Query
-grpcurl -plaintext $AXONE_NODE_GRCP describe cosmwasm.wasm.v1.Query.SmartContractState
+grpcurl -plaintext $AXONE_NODE_GRPP list
+grpcurl -plaintext $AXONE_NODE_GRPP list cosmwasm.wasm.v1.Query
+grpcurl -plaintext $AXONE_NODE_GRPP describe cosmwasm.wasm.v1.Query.SmartContractState
 
 # # Create base64 encoded query data first
 # export QUERY_DATA=$(echo -n '{"dataverse":{}}' | base64 -w 0)
@@ -74,10 +74,10 @@ grpcurl -plaintext $AXONE_NODE_GRCP describe cosmwasm.wasm.v1.Query.SmartContrac
 
 # # Send request
 # grpcurl -plaintext -d @ \
-#   $AXONE_NODE_GRCP cosmwasm.wasm.v1.Query/SmartContractState < request.json
+#   $AXONE_NODE_GRPP cosmwasm.wasm.v1.Query/SmartContractState < request.json
 
 # # Then use the file with grpcurl
-# grpcurl -plaintext -d @ $AXONE_NODE_GRCP cosmwasm.wasm.v1.Query/SmartContractState < request.json
+# grpcurl -plaintext -d @ $AXONE_NODE_GRPP cosmwasm.wasm.v1.Query/SmartContractState < request.json
 
 # # Create base64 encoded query data
 # export QUERY_DATA=$(echo -n '{"dataverse":{}}' | base64 -w 0)
@@ -87,7 +87,7 @@ grpcurl -plaintext $AXONE_NODE_GRCP describe cosmwasm.wasm.v1.Query.SmartContrac
 
 # # Use the get endpoint format
 # grpcurl -plaintext \
-#   "$AXONE_NODE_GRCP/cosmwasm/wasm/v1/contract/axone1uvqk5vj9vn4gjemrp0myz4ku49aaemulgaqw7pfe0nuvfwp3gukqxf4l4g/smart/$QUERY_DATA_URL_SAFE"
+#   "$AXONE_NODE_GRPP/cosmwasm/wasm/v1/contract/axone1uvqk5vj9vn4gjemrp0myz4ku49aaemulgaqw7pfe0nuvfwp3gukqxf4l4g/smart/$QUERY_DATA_URL_SAFE"
 
 # Contract Codes
 
@@ -126,8 +126,8 @@ export ISSUER_DID=$($AXONED_PATH keys show $ISSUER_WALLET -k $KEYRING_BACKEND)
 # https://faucet.axone.xyz/
 
 # Account details for transactions
-export ISSUER_ACCOUNT_NUMBER=$($AXONED_PATH query auth account $ISSUER_ADDRESS --node $AXONE_NODE -o json | jq -r '.account.value.account_number')
-export ISSUER_SEQUENCE=$($AXONED_PATH query auth account $ISSUER_ADDRESS --node $AXONE_NODE -o json | jq -r '.account.value.sequence')
+export ISSUER_ACCOUNT_NUMBER=$($AXONED_PATH query auth account $ISSUER_ADDRESS --node $AXONE_NODE_RPC -o json | jq -r '.account.value.account_number')
+export ISSUER_SEQUENCE=$($AXONED_PATH query auth account $ISSUER_ADDRESS --node $AXONE_NODE_RPC -o json | jq -r '.account.value.sequence')
 
 # Logs
 echo "" 
@@ -171,16 +171,16 @@ echo "OBJECTARIUM_LABEL: $OBJECTARIUM_LABEL" >> $LOG_PATH/implementation.log
 export OBJECTARIUM_TX_HASH=$($AXONED_PATH tx wasm instantiate $CODE_ID_OBJECTARIUM \
     "{\"bucket\":\"$OBJECTARIUM_LABEL\"}" \
     --label "$OBJECTARIUM_LABEL" \
-    --node $AXONE_NODE \
+    --node $AXONE_NODE_RPC \
     --chain-id $NETWORK \
     $KEYRING_BACKEND --from "$ISSUER_ADDRESS" \
     --admin "$ISSUER_ADDRESS" \
     --gas 1000000 \
     --yes -o json | jq -r '.txhash')
 
-wait_and_check_tx "$OBJECTARIUM_TX_HASH" "$AXONE_NODE" "$AXONED_PATH"
+wait_and_check_tx "$OBJECTARIUM_TX_HASH" "$AXONE_NODE_RPC" "$AXONED_PATH"
 
-export OBJECTARIUM_ADDR=$($AXONED_PATH query tx $OBJECTARIUM_TX_HASH --node $AXONE_NODE -o json | \
+export OBJECTARIUM_ADDR=$($AXONED_PATH query tx $OBJECTARIUM_TX_HASH --node $AXONE_NODE_RPC -o json | \
     jq -r '.events[] | select(.type == "instantiate") | .attributes[] | select(.key == "_contract_address") | .value')
 
 echo "OBJECTARIUM_TX_HASH: $OBJECTARIUM_TX_HASH" 
@@ -199,16 +199,16 @@ echo "DATAVERSE_LABEL: $DATAVERSE_LABEL" >> $LOG_PATH/implementation.log
 export DATAVERSE_TX_HASH=$($AXONED_PATH tx wasm instantiate $CODE_ID_DATAVERSE \
     "{\"name\":\"$DATAVERSE_LABEL\",\"triplestore_config\":{\"code_id\":\"$CODE_ID_COGNITARIUM\",\"limits\":{}}}" \
     --label "$DATAVERSE_LABEL" \
-    --node $AXONE_NODE \
+    --node $AXONE_NODE_RPC \
     --chain-id $NETWORK \
     $KEYRING_BACKEND --from "$ISSUER_ADDRESS" \
     --admin "$ISSUER_ADDRESS" \
     --gas 1000000 \
    --yes -o json | jq -r '.txhash')
 
-wait_and_check_tx "$DATAVERSE_TX_HASH" "$AXONE_NODE" "$AXONED_PATH"
+wait_and_check_tx "$DATAVERSE_TX_HASH" "$AXONE_NODE_RPC" "$AXONED_PATH"
 
-export DATAVERSE_ADDR=$($AXONED_PATH query tx $DATAVERSE_TX_HASH --node $AXONE_NODE -o json | \
+export DATAVERSE_ADDR=$($AXONED_PATH query tx $DATAVERSE_TX_HASH --node $AXONE_NODE_RPC -o json | \
     jq --arg CODE_ID "$CODE_ID_DATAVERSE" -r ' 
         .events[] 
         | select(.type == "instantiate") 
@@ -217,7 +217,7 @@ export DATAVERSE_ADDR=$($AXONED_PATH query tx $DATAVERSE_TX_HASH --node $AXONE_N
         | select(.key == "_contract_address") 
         | .value')
 
-export COGNITARIUM_ADDR=$($AXONED_PATH query tx $DATAVERSE_TX_HASH --node $AXONE_NODE -o json | \
+export COGNITARIUM_ADDR=$($AXONED_PATH query tx $DATAVERSE_TX_HASH --node $AXONE_NODE_RPC -o json | \
     jq --arg CODE_ID "$CODE_ID_COGNITARIUM" -r '
         .events[] 
         | select(.type == "instantiate") 
@@ -234,14 +234,14 @@ echo "COGNITARIUM_ADDR: $COGNITARIUM_ADDR"
 echo "COGNITARIUM_ADDR: $COGNITARIUM_ADDR" >> $LOG_PATH/implementation.log
 
 # Check if COGNITARIUM_ADDR is ok
-$AXONED_PATH --node $AXONE_NODE query wasm contract-state smart \
+$AXONED_PATH --node $AXONE_NODE_RPC query wasm contract-state smart \
     $DATAVERSE_ADDR \
     '{"dataverse":{}}' \
     -o json \
     | jq -r '.data.triplestore_address'
 
 # whitelist & blacklist predicates
-$AXONED_PATH --node $AXONE_NODE query logic params -o json \
+$AXONED_PATH --node $AXONE_NODE_RPC query logic params -o json \
   | jq -r '.params.interpreter.predicates_filter | "whitelist: " + (.whitelist | join(", ")) + "\nblacklist: " + (.blacklist | join(", "))'
 
 # Verify all DIDs
@@ -353,7 +353,7 @@ export ZONE_DESCRIPTION_TX_HASH=$($AXONED_PATH tx wasm execute $DATAVERSE_ADDR \
         \"claims\": \"$(base64 -w 0 $ZONES_PATH/$ZONE_WALLET-description.nq)\", \
         \"format\": \"n_quads\" \
     }}" \
-    --node $AXONE_NODE \
+    --node $AXONE_NODE_RPC \
     --chain-id $NETWORK \
     $KEYRING_BACKEND --from $ISSUER_ADDRESS \
     --account-number $ISSUER_ACCOUNT_NUMBER \
@@ -361,7 +361,7 @@ export ZONE_DESCRIPTION_TX_HASH=$($AXONED_PATH tx wasm execute $DATAVERSE_ADDR \
     --gas 10000000 \
     --yes -o json | jq -r '.txhash')
 
-wait_and_check_tx "$ZONE_DESCRIPTION_TX_HASH" "$AXONE_NODE" "$AXONED_PATH"
+wait_and_check_tx "$ZONE_DESCRIPTION_TX_HASH" "$AXONE_NODE_RPC" "$AXONED_PATH"
 
 echo "ZONE_DESCRIPTION_TX_HASH: $ZONE_DESCRIPTION_TX_HASH" 
 echo "ZONE_DESCRIPTION_TX_HASH: $ZONE_DESCRIPTION_TX_HASH" >> $LOG_PATH/implementation.log
@@ -427,7 +427,7 @@ echo "ZONES_GOV_ID: $ZONES_GOV_ID" >> $LOG_PATH/implementation.log
 export ZONES_GOV_SUBMIT_PROGRAM_TX_HASH=$($AXONED_PATH tx wasm instantiate $CODE_ID_LAW_STONE \
     "{\"program\":\"$(base64 -w 0 $ZONES_GOV_PATH/$ZONE_WALLET-governance.pl)\", \"storage_address\": \"$OBJECTARIUM_ADDR\"}" \
     --label $ZONES_GOV_ID \
-    --node $AXONE_NODE \
+    --node $AXONE_NODE_RPC \
     --chain-id $NETWORK \
     $KEYRING_BACKEND --from $ISSUER_ADDRESS \
     --account-number $ISSUER_ACCOUNT_NUMBER \
@@ -436,13 +436,13 @@ export ZONES_GOV_SUBMIT_PROGRAM_TX_HASH=$($AXONED_PATH tx wasm instantiate $CODE
     --gas 20000000 \
     --yes -o json | jq -r '.txhash')
 
-wait_and_check_tx "$ZONES_GOV_SUBMIT_PROGRAM_TX_HASH" "$AXONE_NODE" "$AXONED_PATH"
+wait_and_check_tx "$ZONES_GOV_SUBMIT_PROGRAM_TX_HASH" "$AXONE_NODE_RPC" "$AXONED_PATH"
 
 echo "ZONES_GOV_SUBMIT_PROGRAM_TX_HASH: $ZONES_GOV_SUBMIT_PROGRAM_TX_HASH" 
 echo "ZONES_GOV_SUBMIT_PROGRAM_TX_HASH: $ZONES_GOV_SUBMIT_PROGRAM_TX_HASH" >> $LOG_PATH/implementation.log
 
 # Get contract address
-export ZONES_GOV_ADDR=$($AXONED_PATH query tx $ZONES_GOV_SUBMIT_PROGRAM_TX_HASH --node $AXONE_NODE -o json | \
+export ZONES_GOV_ADDR=$($AXONED_PATH query tx $ZONES_GOV_SUBMIT_PROGRAM_TX_HASH --node $AXONE_NODE_RPC -o json | \
     jq -r '.events[] | select(.type == "instantiate") | .attributes[] | select(.key == "_contract_address") | .value')
 
 echo "ZONES_GOV_ADDR: $ZONES_GOV_ADDR"
@@ -495,7 +495,7 @@ export ZONE_GOV_CRED_TX_HASH=$($AXONED_PATH tx wasm execute $DATAVERSE_ADDR \
     \"claims\": \"$(base64 -w 0 $ZONES_GOV_PATH/$ZONE_WALLET-governance-credential.nq)\", \
     \"format\": \"n_quads\" \
   }}" \
-  --node $AXONE_NODE \
+  --node $AXONE_NODE_RPC \
   --chain-id $NETWORK \
   $KEYRING_BACKEND --from $ISSUER_ADDRESS \
   --account-number $ISSUER_ACCOUNT_NUMBER \
@@ -504,7 +504,7 @@ export ZONE_GOV_CRED_TX_HASH=$($AXONED_PATH tx wasm execute $DATAVERSE_ADDR \
   --yes -o json | jq -r '.txhash')
 
 # Confirm on chain
-wait_and_check_tx "$ZONE_GOV_CRED_TX_HASH" "$AXONE_NODE" "$AXONED_PATH"
+wait_and_check_tx "$ZONE_GOV_CRED_TX_HASH" "$AXONE_NODE_RPC" "$AXONED_PATH"
 
 echo "ZONE_GOV_CRED_TX_HASH: $ZONE_GOV_CRED_TX_HASH" 
 echo "ZONE_GOV_CRED_TX_HASH: $ZONE_GOV_CRED_TX_HASH" >> $LOG_PATH/implementation.log
@@ -531,7 +531,7 @@ export ENCODED_QUERY=$(echo -n "{\"ask\":{\"query\":\"$PROLOG_QUERY\"}}" | base6
 echo "🔍 GRPC tell_permitted_actions for DID: $TEST_DID"
 
 export RESULT_GRPC=$(grpcurl -plaintext -d @ \
-  $AXONE_NODE_GRCP cosmwasm.wasm.v1.Query/SmartContractState <<EOF
+  $AXONE_NODE_GRPP cosmwasm.wasm.v1.Query/SmartContractState <<EOF
 {
   "address": "$LAW_STONE_ADDR",
   "query_data": "$ENCODED_QUERY"
@@ -552,7 +552,7 @@ echo ""
 echo "🔍 AXONED tell('$TEST_DID', '$TEST_ACTION', Result, Evidence):"
 
 export RESULT_RPC=$($AXONED_PATH query wasm contract-state smart $LAW_STONE_ADDR \
-  --node $AXONE_NODE \
+  --node $AXONE_NODE_RPC \
   -o json \
   "{\"ask\":{\"query\":\"$ASK_QUERY\"}}")
 
