@@ -163,7 +163,6 @@ echo "ISSUER_SEQUENCE: $ISSUER_SEQUENCE" >> $LOG_PATH/implementation.log
 ### Objectarium
 
 ```bash
-=
 export OBJECTARIUM_LABEL="my-objectarium"
 echo "OBJECTARIUM_LABEL: $OBJECTARIUM_LABEL"
 echo "OBJECTARIUM_LABEL: $OBJECTARIUM_LABEL" >> $LOG_PATH/implementation.log
@@ -397,9 +396,7 @@ title('chap1', 'Hearth Labs Governance').
 permitted_action('$ISSUER_DID', 'zone:update').
 
 % Contributors that can register resources
-contributor_id('did:key:zQ3shN45CkRnjackWYwM191q2bNanAYeP1ZvxoAEPaV4ZpgZ1').
-contributor_id('did:key:zQ3shN45CkRnjackWYwM191q2bNanAYeP1ZvxoAEPaV4ZpgZ2').
-contributor_id('did:key:zQ3shN45CkRnjackWYwM191q2bNanAYeP1ZvxoAEPaV4ZpgZ3').
+contributor_id('did:key:z6DtrNpHS569CKDUFaXGzAMnLdMoaanxHqqsPnd91ZnyufLL').
 
 permitted_action(DID, 'resource:register') :- contributor_id(DID).
 
@@ -514,9 +511,11 @@ echo "ZONE_GOV_CRED_TX_HASH: $ZONE_GOV_CRED_TX_HASH" >> $LOG_PATH/implementation
 
 ```bash
 # Identidad a testear
-export TEST_DID=$ISSUER_DID            # o cualquier DID válido
-export TEST_DID="did:key:zQ3shN45CkRnjackWYwM191q2bNanAYeP1ZvxoAEPaV4ZpgZ1"
-export TEST_ACTION="zone:update"     # acción a verificar
+# export TEST_DID=$ISSUER_DID            # o cualquier DID válido
+export TEST_DID="did:key:z16DtrNpHS569CKDUFaXGzAMnLdMoaanxHqqsPnd91ZnyufLL"
+# export TEST_ACTION="zone:update"     # acción a verificar
+export TEST_ACTION="resource:register"     # acción a verificar
+
 
 # Contrato law-stone
 export LAW_STONE_ADDR=$ZONES_GOV_ADDR
