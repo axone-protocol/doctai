@@ -14,9 +14,7 @@ title('chap1', 'Hearth Labs Governance').
 permitted_action('did:key:zQ3shN45CkRnjackWYwM191q2bNanAYeP1ZvxoAEPaV4ZpgZo', 'zone:update').
 
 % Contributors that can register resources
-contributor_id('did:key:zQ3shN45CkRnjackWYwM191q2bNanAYeP1ZvxoAEPaV4ZpgZ1').
-contributor_id('did:key:zQ3shN45CkRnjackWYwM191q2bNanAYeP1ZvxoAEPaV4ZpgZ2').
-contributor_id('did:key:zQ3shN45CkRnjackWYwM191q2bNanAYeP1ZvxoAEPaV4ZpgZ3').
+contributor_id('did:key:z6DtrNpHS569CKDUFaXGzAMnLdMoaanxHqqsPnd91ZnyufLL').
 
 permitted_action(DID, 'resource:register') :- contributor_id(DID).
 
