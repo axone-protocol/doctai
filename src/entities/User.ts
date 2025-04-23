@@ -1,12 +1,12 @@
 // entities/User.ts
 import { formatTableName } from "@/lib/backend/utils";
 import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  OneToMany,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn
+    Column,
+    CreateDateColumn,
+    Entity,
+    OneToMany,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn,
 } from "typeorm";
 import { Chat } from "./Chat";
 
@@ -21,6 +21,9 @@ export class User {
     @Column()
     userType!: "contributor" | "guest";
 
+    @Column({ nullable: true })
+    userDID?: string;
+
     @OneToMany("Chat", "User")
     chats!: Chat[];
 
@@ -29,5 +32,4 @@ export class User {
 
     @UpdateDateColumn()
     lastLogin!: Date;
-
 }
