@@ -19,6 +19,9 @@ const nextConfig: NextConfig = {
             },
         ];
 
+        // 🔕 Silencia critical dependency warning
+        config.module.exprContextCritical = false;
+
         if (dev) {
             config.devtool = "eval-source-map"; // Fast for development
         } else {
