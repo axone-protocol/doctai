@@ -9,6 +9,7 @@ export const UserHandler: BaseEntityServer<User> = {
         id: user.id,
         address: user.address,
         userType: user.userType,
+        userDID: user.userDID,
         createdAt: user.createdAt.toISOString(),
         lastLogin: user.lastLogin.toISOString(),
     }),
@@ -18,6 +19,7 @@ export const UserHandler: BaseEntityServer<User> = {
         user.id = dto.id;
         user.address = dto.address;
         user.userType = dto.userType;
+        user.userDID = dto.userDID;
         // user.createdAt = new Date(dto.createdAt);
         // user.lastLogin = new Date(dto.lastLogin);
         return user;

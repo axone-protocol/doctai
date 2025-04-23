@@ -1,7 +1,7 @@
-import { verifyADR36Signature } from "@/lib/keplr";
+import { getDidFromPubKeyBase64, verifyADR36Signature } from "@/lib/keplr/keplr";
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import { queryIsContributor } from "@/lib/roles";
+import { queryIsContributor } from "@/lib/keplr/roles";
 import { SESSION_MAX_AGE } from "@/lib/constants";
 import { PostgreSQLDatabaseService } from "@/lib/backend/PostgreSQLDatabaseService";
 import { User } from "@/entities/User";
@@ -56,18 +56,22 @@ const handler = NextAuth({
                     );
                     if (!isValid) return null;
                     //---------------------------------------
-                    const isContributor = await queryIsContributor(address);
+                    const userDID = getDidFromPubKeyBase64(pubKey);
+                    //---------------------------------------
+                    const isContributor = await queryIsContributor(userDID);
                     //---------------------------------------
                     const db = await PostgreSQLDatabaseService.getDataSource();
                     const repo = db.getRepository(User.name);
                     let user = await repo.findOneBy({ address });
                     if (user) {
                         user.userType = isContributor ? "contributor" : "guest";
+                        user.userDID = userDID;
                         await repo.save(user); // update
                     } else {
                         user = repo.create({
                             address,
                             userType: isContributor ? "contributor" : "guest",
+                            userDID,
                         });
                         await repo.save(user); // insert
                     }
@@ -78,6 +82,7 @@ const handler = NextAuth({
                         id: address,
                         address,
                         userType: isContributor ? "contributor" : "guest",
+                        userDID,
                         // maxAge,
                     };
                 } catch (error) {
@@ -93,11 +98,13 @@ const handler = NextAuth({
                 user &&
                 typeof user === "object" &&
                 "address" in user &&
-                "userType" in user
+                "userType" in user &&
+                "userDID" in user
                 //  && "maxAge" in user
             ) {
                 token.address = (user as any).address;
                 token.userType = (user as any).userType;
+                token.userDID = (user as any).userDID;
                 // token.maxAge = (user as any).maxAge;
             }
             return token;
@@ -107,6 +114,7 @@ const handler = NextAuth({
                 ...(session.user || {}),
                 address: token.address as string,
                 userType: token.userType as "contributor" | "guest",
+                userDID: token.userDID as string,
                 // maxAge: token.maxAge as number, // Use maxAge from token
                 // expires: new Date(Date.now() + (token.maxAge as number || 0) * 1000).toISOString(),
             };

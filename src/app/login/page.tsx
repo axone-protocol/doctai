@@ -1,6 +1,11 @@
 "use client";
 import { CHAIN_ID } from "@/lib/constants";
-import { connectKeplr, getKeplr, verifyADR36Signature } from "@/lib/keplr";
+import {
+    connectKeplr,
+    getDidFromPubKeyBase64,
+    getKeplr,
+    verifyADR36Signature,
+} from "@/lib/keplr/keplr";
 import { signIn } from "next-auth/react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -9,7 +14,13 @@ import styles from "./page.module.scss";
 import { useAuth } from "@/hooks/useAuth";
 
 export default function LoginPage() {
-    const { setAddress, setUserType, initialized, isAuthenticated } = useAuth({
+    const {
+        setAddress,
+        setUserType,
+        setUserDID,
+        initialized,
+        isAuthenticated,
+    } = useAuth({
         autoRedirect: false,
     });
     const router = useRouter();
@@ -35,6 +46,8 @@ export default function LoginPage() {
             );
             const pubKey = signed.pub_key.value;
 
+            const userDID = getDidFromPubKeyBase64(pubKey);
+
             const isValid = verifyADR36Signature({
                 message,
                 address: result.address,
@@ -58,6 +71,7 @@ export default function LoginPage() {
             if (login?.ok) {
                 setAddress(result.address);
                 setUserType("guest"); // provisional; el backend setea el real
+                setUserDID(userDID);
                 router.push("/home");
             } else {
                 alert("Login failed");
@@ -77,6 +91,7 @@ export default function LoginPage() {
                     alt="DoctAI Logo"
                     width={250}
                     height={250}
+                    priority
                 />
                 <p className={styles.subtitle}>
                     DoctAI is an AI-powered analysis platform for cardiac

@@ -1,8 +1,8 @@
 // app/layout.tsx
 import "./globals.scss";
 import type { Metadata } from "next";
-import SessionProvider from "@/components/SessionProvider/SessionProvider";
 import styles from "./layout.module.scss"; // NUEVO
+import SessionProvider from "../components/SessionProvider/SessionProvider";
 
 export const metadata: Metadata = {
     title: "DoctAI",
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
         icon: "/favicon.ico",
         apple: "/apple-touch-icon.png",
     },
-    manifest: "/manifest.json",
+    manifest: "/site.webmanifest",
 };
 
 export default function RootLayout({

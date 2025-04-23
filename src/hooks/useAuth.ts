@@ -8,8 +8,15 @@ import { User } from "@/entities/User";
 
 export function useAuth({ autoRedirect = true } = {}) {
     const { data: session, status } = useSession();
-    const { address, userType, setAddress, setUserType,setUser, reset } =
-        useUserStore();
+    const {
+        address,
+        userType,
+        setAddress,
+        setUserType,
+        setUser,
+        setUserDID,
+        reset,
+    } = useUserStore();
     const router = useRouter();
     const pathname = usePathname();
     const [initialized, setInitialized] = useState(false);
@@ -21,12 +28,13 @@ export function useAuth({ autoRedirect = true } = {}) {
                 // Use generic entity filter to fetch user from DB
                 const users = await fetchEntities<User>(User.name, {
                     filter: { address: session.user.address },
-                  });
+                });
                 const dbUser = users[0];
 
                 if (dbUser) {
                     setAddress(session.user.address);
                     setUserType(session.user.userType);
+                    setUserDID(session.user.userDID);
                     setUser(dbUser);
                 }
             } else if (autoRedirect && pathname !== "/login") {
@@ -47,6 +55,7 @@ export function useAuth({ autoRedirect = true } = {}) {
         initialized,
         setAddress,
         setUserType,
+        setUserDID,
         reset,
     };
 }
