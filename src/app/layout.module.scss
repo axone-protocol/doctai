@@ -1,0 +1,32 @@
+/* app/layout.module.scss */
+
+.footer {
+    text-align: center;
+    font-size: 0.9rem;
+    color: #888;
+    padding: 2rem 1rem 1rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    background-color: #f9f9f9;
+    margin-top: auto;
+
+    a {
+        color: var(--color-secondary);
+        text-decoration: none;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    padding-bottom: 60px; /* Adjust this value based on your footer's height */
+    position: relative;
+}
+
+.mainContent {
+    flex: 1;
+}

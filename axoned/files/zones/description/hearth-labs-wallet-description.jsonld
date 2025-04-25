@@ -1,0 +1,24 @@
+{
+  "@context": [
+    "https://www.w3.org/2018/credentials/v1",
+    "https://w3id.org/axone/ontology/v4/schema/credential/zone/description/"
+  ],
+  "type": ["VerifiableCredential", "ZoneDescriptionCredential"],
+  "id": "https://w3id.org/axone/ontology/v4/schema/credential/zone/description/d99cfd2e-d2ae-43af-9d38-ed16ceeb86ac",
+  "credentialSubject": {
+    "id": "did:key:zQ3shmDoRRiFmNzwDrnV2iPdgA9xaoAYsSq8GC9tGHsNL4R7a",
+    "hasDescription": "Hearth Labs is a governed zone focused on collaborative analysis of cardiac data through AI agents.",
+    "hasTag": [
+      "Health",
+      "AI",
+      "Cardiology"
+    ],
+    "hasTitle": "Hearth Labs",
+    "hasTopic": "https://w3id.org/axone/ontology/v4/thesaurus/topic/health"
+  },
+  "issuanceDate": "2025-04-22T22:59:13Z",
+  "issuer": {
+    "id": "did:key:zQ3shN45CkRnjackWYwM191q2bNanAYeP1ZvxoAEPaV4ZpgZo",
+    "name": "doctai-issuer-wallet"
+  }
+}
