@@ -1,0 +1,14 @@
+@mixin theme-vars {
+    :root {
+        --color-bg: #ffffff;
+        --color-text: #111111;
+        --color-primary: #e11d48;
+        --color-secondary: #2563eb;
+        --color-accent: #10b981;
+
+        --font-sans: "system-ui", sans-serif;
+        --font-size-base: 16px;
+        --font-size-title: 24px;
+        --radius: 8px;
+    }
+}
