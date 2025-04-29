@@ -1,14 +1,16 @@
 
+# Minio S3
 
 ## Table of Contents
 
-- [Table of Contents](#table-of-contents)
-- [Minio S3 SetUp](#minio-s3-setup)
+- [Minio S3](#minio-s3)
+  - [Table of Contents](#table-of-contents)
+  - [Minio S3 SetUp](#minio-s3-setup)
 
 ## Minio S3 SetUp
 
 para iniciar minio server y cliente
-agrega automaticamente README a MYSTORAGE/test 
+agrega automaticamente README a MYSTORAGE/test
 
 ```bash
 docker compose up
@@ -31,13 +33,13 @@ Se puede usar el API en
 
 hpps://localhost:9000
 
-y webUI 
+y webUI
 
-http://127.0.0.1:9001 
+<http://127.0.0.1:9001>
 
-con 
+con
 
 USER=minioadmin
 PASSWORD=minioadmin
 
-Docs: https://docs.min.io
+Docs: <https://docs.min.io>

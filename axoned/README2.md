@@ -7,21 +7,21 @@
   - [Table of Contents](#table-of-contents)
   - [Create Minio S3 Storage Service](#create-minio-s3-storage-service)
     - [Step 1: Set Env for Minio DID Description](#step-1-set-env-for-minio-did-description)
-    - [Step 2: Key and DID Creation](#step-2-key-and-did-creation)
-    - [Step 3: Create Credentials](#step-3-create-credentials)
-    - [Step 4: Sign Credentials](#step-4-sign-credentials)
-    - [Step 5: Register in Blockchain](#step-5-register-in-blockchain)
+    - [Step 2: Minio Key and DID Creation](#step-2-minio-key-and-did-creation)
+    - [Step 3: Create Minio Credentials](#step-3-create-minio-credentials)
+    - [Step 4: Sign Minio Credentials](#step-4-sign-minio-credentials)
+    - [Step 5: Register Minio Credentials](#step-5-register-minio-credentials)
   - [Create Minio Governance](#create-minio-governance)
-    - [Step 1: Set Env for Zone DID Governance](#step-1-set-env-for-zone-did-governance)
-    - [Step 2: Create Governance Rules](#step-2-create-governance-rules)
-    - [Step 3: Submit Prolog Program to Blockchain](#step-3-submit-prolog-program-to-blockchain)
-    - [Step 4: Create Governance Credentials](#step-4-create-governance-credentials)
-    - [Step 5: Sign and Submit Governance Credentials](#step-5-sign-and-submit-governance-credentials)
-    - [Step 7: Testing](#step-7-testing)
+    - [Step 1: Set Env for Minio DID Governance](#step-1-set-env-for-minio-did-governance)
+    - [Step 2: Create Minio Governance Rules](#step-2-create-minio-governance-rules)
+    - [Step 3: Submit Minio Prolog Programs](#step-3-submit-minio-prolog-programs)
+    - [Step 4: Create Minio Governance Credentials](#step-4-create-minio-governance-credentials)
+    - [Step 5: Sign and Submit Minio Governance Credentials](#step-5-sign-and-submit-minio-governance-credentials)
+    - [Step 7: Testing Minio Credentials](#step-7-testing-minio-credentials)
   - [Create Minio S3 Zone Membership Credential](#create-minio-s3-zone-membership-credential)
     - [Step 1: Create Zone Membership Credential](#step-1-create-zone-membership-credential)
-    - [Step 4: Sign Credentials](#step-4-sign-credentials-1)
-    - [Step 5: Register in Blockchain](#step-5-register-in-blockchain-1)
+    - [Step 4: Sign Zone Membership Credentials](#step-4-sign-zone-membership-credentials)
+    - [Step 5: Register Zone Membership Credentials](#step-5-register-zone-membership-credentials)
 
 ## Create Minio S3 Storage Service
 
@@ -84,7 +84,7 @@ echo "MINIO_WALLET: $MINIO_WALLET" >> $LOG_PATH/implementation.log
 
 ```
 
-### Step 2: Key and DID Creation
+### Step 2: Minio Key and DID Creation
 
 ```bash
 $AXONED_PATH keys add $MINIO_WALLET $KEYRING_BACKEND
@@ -118,7 +118,7 @@ echo "MINIO_PHRASE: $MINIO_PHRASE"
 echo "MINIO_PHRASE: $MINIO_PHRASE" >> $LOG_PATH/implementation.log
 ```
 
-### Step 3: Create Credentials
+### Step 3: Create Minio Credentials
 
 ```bash
 export MINIO_DESCRIPTION_ID=$(uuidgen)
@@ -154,7 +154,7 @@ cat <<EOF | envsubst > $MINIO_PATH/$MINIO_WALLET-description.jsonld
 EOF
 ```
 
-### Step 4: Sign Credentials
+### Step 4: Sign Minio Credentials
 
 Sign and encode the zone credentials:
 
@@ -163,7 +163,7 @@ $AXONED_PATH credential sign $MINIO_PATH/$MINIO_WALLET-description.jsonld \
     $KEYRING_BACKEND --from $ISSUER_WALLET | jsonld toRdf -q - > $MINIO_PATH/$MINIO_WALLET-description.nq
 ```
 
-### Step 5: Register in Blockchain
+### Step 5: Register Minio Credentials
 
 ```bash
 # Submit minio description to blockchain
@@ -188,7 +188,7 @@ echo "MINIO_DESCRIPTION_TX_HASH: $MINIO_DESCRIPTION_TX_HASH" >> $LOG_PATH/implem
 
 ## Create Minio Governance
 
-### Step 1: Set Env for Zone DID Governance
+### Step 1: Set Env for Minio DID Governance
 
 ```bash
 export MINIO_GOV_PATH=$WORK_DIR_AXONE/files/minio/governance
@@ -198,7 +198,7 @@ echo "MINIO_GOV_PATH: $MINIO_GOV_PATH"
 echo "MINIO_GOV_PATH: $MINIO_GOV_PATH" >> $LOG_PATH/implementation.log
 ```
 
-### Step 2: Create Governance Rules
+### Step 2: Create Minio Governance Rules
 
 ```bash
 # Create service governance Prolog rules
@@ -268,7 +268,7 @@ tell_permitted_actions(Who, PermittedActions) :-
 EOF
 ```
 
-### Step 3: Submit Prolog Program to Blockchain
+### Step 3: Submit Minio Prolog Programs
 
 Create a Law Stone contract instance for the zone governance:
 
@@ -304,7 +304,7 @@ echo "MINIO_GOV_ADDR: $MINIO_GOV_ADDR"
 echo "MINIO_GOV_ADDR: $MINIO_GOV_ADDR" >> $LOG_PATH/implementation.log
 ```
 
-### Step 4: Create Governance Credentials
+### Step 4: Create Minio Governance Credentials
 
 Create the governance credential file:
 
@@ -337,7 +337,7 @@ cat <<EOF | envsubst > $MINIO_GOV_PATH/$MINIO_WALLET-governance-credential.jsonl
 EOF
 ```
 
-### Step 5: Sign and Submit Governance Credentials
+### Step 5: Sign and Submit Minio Governance Credentials
 
 ```bash
 # Sign the credential
@@ -365,7 +365,7 @@ echo "MINIO_GOV_CRED_TX_HASH: $MINIO_GOV_CRED_TX_HASH"
 echo "MINIO_GOV_CRED_TX_HASH: $MINIO_GOV_CRED_TX_HASH" >> $LOG_PATH/implementation.log
 ```
 
-### Step 7: Testing
+### Step 7: Testing Minio Credentials
 
 ```bash
 # Identidad a testear
@@ -414,7 +414,8 @@ export RESULT_RPC=$($AXONED_PATH query wasm contract-state smart $LAW_STONE_ADDR
 # Mostrar formateado
 echo "$RESULT_RPC" | jq
 ```
-## Create Minio S3 Zone Membership Credential   
+
+## Create Minio S3 Zone Membership Credential
 
 ### Step 1: Create Zone Membership Credential
 
@@ -446,7 +447,7 @@ cat <<EOF | envsubst > $MINIO_PATH/$MINIO_WALLET-zone-membership-credential.json
 EOF
 ```
 
-### Step 4: Sign Credentials
+### Step 4: Sign Zone Membership Credentials
 
 Sign and encode the zone credentials:
 
@@ -455,7 +456,7 @@ $AXONED_PATH credential sign $MINIO_PATH/$MINIO_WALLET-zone-membership-credentia
     $KEYRING_BACKEND --from $ISSUER_WALLET | jsonld toRdf -q - > $MINIO_PATH/$MINIO_WALLET-zone-membership-credential.nq
 ```
 
-### Step 5: Register in Blockchain
+### Step 5: Register Zone Membership Credentials
 
 ```bash
 # Submit minio description to blockchain

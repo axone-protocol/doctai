@@ -721,5 +721,3 @@ $AXONED_PATH --node $AXONE_NODE_RPC query wasm contract-state smart \
   '{"program_code":{}}' -o json | jq -r '.data' | base64 -d
 
 ```
-
-
