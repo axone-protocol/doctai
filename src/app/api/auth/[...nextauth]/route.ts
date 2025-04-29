@@ -1,7 +1,7 @@
 import { getDidFromPubKeyBase64, verifyADR36Signature } from "@/lib/keplr/keplr";
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import { queryIsContributor } from "@/lib/keplr/roles";
+import { queryIsContributor } from "@/lib/keplr/utils";
 import { SESSION_MAX_AGE } from "@/lib/constants";
 import { PostgreSQLDatabaseService } from "@/lib/backend/PostgreSQLDatabaseService";
 import { User } from "@/entities/User";
