@@ -45,12 +45,12 @@ export MAYOR=4
 
 # Node connection
 export AXONE_NODE_RPC=https://api.dentrite.axone.xyz:443/rpc
-export AXONE_NODE_GRPP=axone-testnet-grpc.polkachu.com:17690
-# export AXONE_NODE_GRPP=grpc.dentrite.axone.xyz:443
+export AXONE_NODE_GRPC=axone-testnet-grpc.polkachu.com:17690
+# export AXONE_NODE_GRPC=grpc.dentrite.axone.xyz:443
 
 
 # export AXONE_NODE_RPC=http://127.0.0.1:26657
-# export AXONE_NODE_GRPP=localhost:9090
+# export AXONE_NODE_GRPC=localhost:9090
 
 export NETWORK=$(curl $AXONE_NODE_RPC/status | jq -r '.result.node_info.network')
 
@@ -58,9 +58,9 @@ export NETWORK=$(curl $AXONE_NODE_RPC/status | jq -r '.result.node_info.network'
 # curl -sSL "https://github.com/fullstorydev/grpcurl/releases/download/v1.9.3/grpcurl_1.9.3_linux_x86_64.tar.gz" | sudo tar -xz -C /usr/local/bin
 
 # test grp
-grpcurl -plaintext $AXONE_NODE_GRPP list
-grpcurl -plaintext $AXONE_NODE_GRPP list cosmwasm.wasm.v1.Query
-grpcurl -plaintext $AXONE_NODE_GRPP describe cosmwasm.wasm.v1.Query.SmartContractState
+grpcurl -plaintext $AXONE_NODE_GRPC list
+grpcurl -plaintext $AXONE_NODE_GRPC list cosmwasm.wasm.v1.Query
+grpcurl -plaintext $AXONE_NODE_GRPC describe cosmwasm.wasm.v1.Query.SmartContractState
 
 # # Create base64 encoded query data first
 # export QUERY_DATA=$(echo -n '{"dataverse":{}}' | base64 -w 0)
@@ -74,10 +74,10 @@ grpcurl -plaintext $AXONE_NODE_GRPP describe cosmwasm.wasm.v1.Query.SmartContrac
 
 # # Send request
 # grpcurl -plaintext -d @ \
-#   $AXONE_NODE_GRPP cosmwasm.wasm.v1.Query/SmartContractState < request.json
+#   $AXONE_NODE_GRPC cosmwasm.wasm.v1.Query/SmartContractState < request.json
 
 # # Then use the file with grpcurl
-# grpcurl -plaintext -d @ $AXONE_NODE_GRPP cosmwasm.wasm.v1.Query/SmartContractState < request.json
+# grpcurl -plaintext -d @ $AXONE_NODE_GRPC cosmwasm.wasm.v1.Query/SmartContractState < request.json
 
 # # Create base64 encoded query data
 # export QUERY_DATA=$(echo -n '{"dataverse":{}}' | base64 -w 0)
@@ -87,7 +87,7 @@ grpcurl -plaintext $AXONE_NODE_GRPP describe cosmwasm.wasm.v1.Query.SmartContrac
 
 # # Use the get endpoint format
 # grpcurl -plaintext \
-#   "$AXONE_NODE_GRPP/cosmwasm/wasm/v1/contract/axone1uvqk5vj9vn4gjemrp0myz4ku49aaemulgaqw7pfe0nuvfwp3gukqxf4l4g/smart/$QUERY_DATA_URL_SAFE"
+#   "$AXONE_NODE_GRPC/cosmwasm/wasm/v1/contract/axone1uvqk5vj9vn4gjemrp0myz4ku49aaemulgaqw7pfe0nuvfwp3gukqxf4l4g/smart/$QUERY_DATA_URL_SAFE"
 
 # Contract Codes
 
@@ -134,8 +134,28 @@ echo ""
 echo "" >> $LOG_PATH/implementation.log
 echo "Implementation started at $(date)" 
 echo "Implementation started at $(date)" >> $LOG_PATH/implementation.log
-echo "Network: $NETWORK"
-echo "Network: $NETWORK" >> $LOG_PATH/implementation.log
+
+
+echo "WORK_DIR_AXONE: $WORK_DIR_AXONE"
+echo "WORK_DIR_AXONE: $WORK_DIR_AXONE" >> $LOG_PATH/implementation.log
+echo "FILES_DIR: $FILES_DIR"
+echo "FILES_DIR: $FILES_DIR" >> $LOG_PATH/implementation.log
+echo "LOG_PATH: $LOG_PATH"
+echo "LOG_PATH: $LOG_PATH" >> $LOG_PATH/implementation.log
+echo "AXONED_PATH: $AXONED_PATH"
+echo "AXONED_PATH: $AXONED_PATH" >> $LOG_PATH/implementation.log
+echo "MAYOR: $MAYOR"
+echo "MAYOR: $MAYOR" >> $LOG_PATH/implementation.log
+echo "AXONE_NODE_RPC: $AXONE_NODE_RPC"
+echo "AXONE_NODE_RPC: $AXONE_NODE_RPC" >> $LOG_PATH/implementation.log
+echo "AXONE_NODE_GRPC: $AXONE_NODE_GRPC"
+echo "AXONE_NODE_GRPC: $AXONE_NODE_GRPC" >> $LOG_PATH/implementation.log
+
+echo "NETWORK: $NETWORK"
+echo "NETWORK: $NETWORK" >> $LOG_PATH/implementation.log
+
+echo "KEYRING_BACKEND: $KEYRING_BACKEND"
+echo "KEYRING_BACKEND: $KEYRING_BACKEND" >> $LOG_PATH/implementation.log
 
 echo "CODE_ID_DATAVERSE: $CODE_ID_DATAVERSE"
 echo "CODE_ID_DATAVERSE: $CODE_ID_DATAVERSE" >> $LOG_PATH/implementation.log
@@ -252,10 +272,16 @@ $AXONED_PATH keys list $KEYRING_BACKEND
 ### Step 1: Set Env for Zone DID Description
 
 ```bash
-export ZONES_PATH=$WORK_DIR_AXONE/files/zones/description
-mkdir -p $ZONES_PATH
+export ZONE_PATH=$WORK_DIR_AXONE/files/zones/description
+mkdir -p $ZONE_PATH
 
 export ZONE_WALLET=hearth-labs-wallet
+
+echo "ZONE_PATH: $ZONE_PATH"
+echo "ZONE_PATH: $ZONE_PATH" >> $LOG_PATH/implementation.log
+echo "ZONE_WALLET: $ZONE_WALLET"
+echo "ZONE_WALLET: $ZONE_WALLET" >> $LOG_PATH/implementation.log
+
 ```
 
 ### Step 2: Key and DID Creation
@@ -284,8 +310,7 @@ silly inflict hungry inhale brush avocado sample ivory swarm audit add tattoo br
 export ZONE_ADDRESS=$($AXONED_PATH keys show $ZONE_WALLET -a $KEYRING_BACKEND)
 export ZONE_DID=$($AXONED_PATH keys show $ZONE_WALLET -k $KEYRING_BACKEND)
 
-echo "ZONE_WALLET: $ZONE_WALLET"
-echo "ZONE_WALLET: $ZONE_WALLET" >> $LOG_PATH/implementation.log
+
 echo "ZONE_ADDRESS: $ZONE_ADDRESS"
 echo "ZONE_ADDRESS: $ZONE_ADDRESS" >> $LOG_PATH/implementation.log
 echo "ZONE_DID: $ZONE_DID"
@@ -303,7 +328,7 @@ export ZONE_DESCRIPTION_ID=$(uuidgen)
 echo "ZONE_DESCRIPTION_ID: $ZONE_DESCRIPTION_ID"
 echo "ZONE_DESCRIPTION_ID: $ZONE_DESCRIPTION_ID" >> $LOG_PATH/implementation.log
 
-cat <<EOF | envsubst > $ZONES_PATH/$ZONE_WALLET-description.jsonld
+cat <<EOF | envsubst > $ZONE_PATH/$ZONE_WALLET-description.jsonld
 {
   "@context": [
     "https://www.w3.org/2018/credentials/v1",
@@ -337,8 +362,8 @@ Sign and encode the zone credentials:
 
 ```bash
 # Sign the zone credential
-$AXONED_PATH credential sign $ZONES_PATH/$ZONE_WALLET-description.jsonld \
-    $KEYRING_BACKEND --from $ISSUER_WALLET | jsonld toRdf -q - > $ZONES_PATH/$ZONE_WALLET-description.nq
+$AXONED_PATH credential sign $ZONE_PATH/$ZONE_WALLET-description.jsonld \
+    $KEYRING_BACKEND --from $ISSUER_WALLET | jsonld toRdf -q - > $ZONE_PATH/$ZONE_WALLET-description.nq
 ```
 
 ### Step 5: Register in Blockchain
@@ -349,7 +374,7 @@ Submit the signed zone description to the blockchain:
 # Submit zone description to blockchain
 export ZONE_DESCRIPTION_TX_HASH=$($AXONED_PATH tx wasm execute $DATAVERSE_ADDR \
     "{\"submit_claims\":{\
-        \"claims\": \"$(base64 -w 0 $ZONES_PATH/$ZONE_WALLET-description.nq)\", \
+        \"claims\": \"$(base64 -w 0 $ZONE_PATH/$ZONE_WALLET-description.nq)\", \
         \"format\": \"n_quads\" \
     }}" \
     --node $AXONE_NODE_RPC \
@@ -371,15 +396,18 @@ echo "ZONE_DESCRIPTION_TX_HASH: $ZONE_DESCRIPTION_TX_HASH" >> $LOG_PATH/implemen
 ### Step 1: Set Env for Zone DID Governance
 
 ```bash
-export ZONES_GOV_PATH=$WORK_DIR_AXONE/files/zones/governance
-mkdir -p $ZONES_GOV_PATH
+export ZONE_GOV_PATH=$WORK_DIR_AXONE/files/zones/governance
+mkdir -p $ZONE_GOV_PATH
+
+echo "ZONE_GOV_PATH: $ZONE_GOV_PATH"
+echo "ZONE_GOV_PATH: $ZONE_GOV_PATH" >> $LOG_PATH/implementation.log
 ```
 
 ### Step 2: Create Governance Rules
 
 ```bash
 # Create service governance Prolog rules
-cat <<EOF | envsubst > $ZONES_GOV_PATH/$ZONE_WALLET-governance.pl
+cat <<EOF | envsubst > $ZONE_GOV_PATH/$ZONE_WALLET-governance.pl
 % Hearth Labs Zone Governance
 % ===========================
 
@@ -416,14 +444,14 @@ Create a Law Stone contract instance for the zone governance:
 
 ```bash
 # Generate unique label
-export ZONES_GOV_ID=$(uuidgen)
-echo "ZONES_GOV_ID: $ZONES_GOV_ID"
-echo "ZONES_GOV_ID: $ZONES_GOV_ID" >> $LOG_PATH/implementation.log
+export ZONE_GOV_ID=$(uuidgen)
+echo "ZONE_GOV_ID: $ZONE_GOV_ID"
+echo "ZONE_GOV_ID: $ZONE_GOV_ID" >> $LOG_PATH/implementation.log
 
 # Submit program
-export ZONES_GOV_SUBMIT_PROGRAM_TX_HASH=$($AXONED_PATH tx wasm instantiate $CODE_ID_LAW_STONE \
-    "{\"program\":\"$(base64 -w 0 $ZONES_GOV_PATH/$ZONE_WALLET-governance.pl)\", \"storage_address\": \"$OBJECTARIUM_ADDR\"}" \
-    --label $ZONES_GOV_ID \
+export ZONE_GOV_SUBMIT_PROGRAM_TX_HASH=$($AXONED_PATH tx wasm instantiate $CODE_ID_LAW_STONE \
+    "{\"program\":\"$(base64 -w 0 $ZONE_GOV_PATH/$ZONE_WALLET-governance.pl)\", \"storage_address\": \"$OBJECTARIUM_ADDR\"}" \
+    --label $ZONE_GOV_ID \
     --node $AXONE_NODE_RPC \
     --chain-id $NETWORK \
     $KEYRING_BACKEND --from $ISSUER_ADDRESS \
@@ -433,17 +461,17 @@ export ZONES_GOV_SUBMIT_PROGRAM_TX_HASH=$($AXONED_PATH tx wasm instantiate $CODE
     --gas 20000000 \
     --yes -o json | jq -r '.txhash')
 
-wait_and_check_tx "$ZONES_GOV_SUBMIT_PROGRAM_TX_HASH" "$AXONE_NODE_RPC" "$AXONED_PATH"
+wait_and_check_tx "$ZONE_GOV_SUBMIT_PROGRAM_TX_HASH" "$AXONE_NODE_RPC" "$AXONED_PATH"
 
-echo "ZONES_GOV_SUBMIT_PROGRAM_TX_HASH: $ZONES_GOV_SUBMIT_PROGRAM_TX_HASH" 
-echo "ZONES_GOV_SUBMIT_PROGRAM_TX_HASH: $ZONES_GOV_SUBMIT_PROGRAM_TX_HASH" >> $LOG_PATH/implementation.log
+echo "ZONE_GOV_SUBMIT_PROGRAM_TX_HASH: $ZONE_GOV_SUBMIT_PROGRAM_TX_HASH" 
+echo "ZONE_GOV_SUBMIT_PROGRAM_TX_HASH: $ZONE_GOV_SUBMIT_PROGRAM_TX_HASH" >> $LOG_PATH/implementation.log
 
 # Get contract address
-export ZONES_GOV_ADDR=$($AXONED_PATH query tx $ZONES_GOV_SUBMIT_PROGRAM_TX_HASH --node $AXONE_NODE_RPC -o json | \
+export ZONE_GOV_ADDR=$($AXONED_PATH query tx $ZONE_GOV_SUBMIT_PROGRAM_TX_HASH --node $AXONE_NODE_RPC -o json | \
     jq -r '.events[] | select(.type == "instantiate") | .attributes[] | select(.key == "_contract_address") | .value')
 
-echo "ZONES_GOV_ADDR: $ZONES_GOV_ADDR"
-echo "ZONES_GOV_ADDR: $ZONES_GOV_ADDR" >> $LOG_PATH/implementation.log
+echo "ZONE_GOV_ADDR: $ZONE_GOV_ADDR"
+echo "ZONE_GOV_ADDR: $ZONE_GOV_ADDR" >> $LOG_PATH/implementation.log
 ```
 
 ### Step 4: Create Governance Credentials
@@ -455,7 +483,7 @@ export ZONE_GOV_CRED_ID=$(uuidgen)
 echo "ZONE_GOV_CRED_ID: $ZONE_GOV_CRED_ID"
 echo "ZONE_GOV_CRED_ID: $ZONE_GOV_CRED_ID" >> $LOG_PATH/implementation.log
 
-cat <<EOF | envsubst > $ZONES_GOV_PATH/$ZONE_WALLET-governance-credential.jsonld
+cat <<EOF | envsubst > $ZONE_GOV_PATH/$ZONE_WALLET-governance-credential.jsonld
 {
   "@context": [
     "https://www.w3.org/2018/credentials/v1",
@@ -467,7 +495,7 @@ cat <<EOF | envsubst > $ZONES_GOV_PATH/$ZONE_WALLET-governance-credential.jsonld
     "id": "$ZONE_DID",
     "isGovernedBy": {
       "type": "GovernanceText",
-      "fromGovernance": "cosmwasm:law-stone:${ZONES_GOV_ADDR}?query=%22program_code%22"
+      "fromGovernance": "cosmwasm:law-stone:${ZONE_GOV_ADDR}?query=%22program_code%22"
     }
   },
   "issuanceDate": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
@@ -483,13 +511,13 @@ EOF
 
 ```bash
 # Sign the credential
-$AXONED_PATH credential sign $ZONES_GOV_PATH/$ZONE_WALLET-governance-credential.jsonld \
-  $KEYRING_BACKEND --from $ISSUER_WALLET | jsonld toRdf -q - > $ZONES_GOV_PATH/$ZONE_WALLET-governance-credential.nq
+$AXONED_PATH credential sign $ZONE_GOV_PATH/$ZONE_WALLET-governance-credential.jsonld \
+  $KEYRING_BACKEND --from $ISSUER_WALLET | jsonld toRdf -q - > $ZONE_GOV_PATH/$ZONE_WALLET-governance-credential.nq
 
 # Encode inline and submit directly
 export ZONE_GOV_CRED_TX_HASH=$($AXONED_PATH tx wasm execute $DATAVERSE_ADDR \
   "{\"submit_claims\":{\
-    \"claims\": \"$(base64 -w 0 $ZONES_GOV_PATH/$ZONE_WALLET-governance-credential.nq)\", \
+    \"claims\": \"$(base64 -w 0 $ZONE_GOV_PATH/$ZONE_WALLET-governance-credential.nq)\", \
     \"format\": \"n_quads\" \
   }}" \
   --node $AXONE_NODE_RPC \
@@ -518,7 +546,7 @@ export TEST_ACTION="resource:register"     # acción a verificar
 
 
 # Contrato law-stone
-export LAW_STONE_ADDR=$ZONES_GOV_ADDR
+export LAW_STONE_ADDR=$ZONE_GOV_ADDR
 
 # ------------------------------
 # ASK via gRPC (tell_permitted_actions)
@@ -530,7 +558,7 @@ export ENCODED_QUERY=$(echo -n "{\"ask\":{\"query\":\"$PROLOG_QUERY\"}}" | base6
 echo "🔍 GRPC tell_permitted_actions for DID: $TEST_DID"
 
 export RESULT_GRPC=$(grpcurl -plaintext -d @ \
-  $AXONE_NODE_GRPP cosmwasm.wasm.v1.Query/SmartContractState <<EOF
+  $AXONE_NODE_GRPC cosmwasm.wasm.v1.Query/SmartContractState <<EOF
 {
   "address": "$LAW_STONE_ADDR",
   "query_data": "$ENCODED_QUERY"
@@ -557,4 +585,141 @@ export RESULT_RPC=$($AXONED_PATH query wasm contract-state smart $LAW_STONE_ADDR
 
 # Mostrar formateado
 echo "$RESULT_RPC" | jq
+
+
+
+# ------------------------------
+# ASK ALL COGNITARIUM TRIPLES
+# ------------------------------
+
+QUERY=$(jq -n '{
+  select: {
+    query: {
+    "prefixes": [],
+      select: [
+        { variable: "s" },
+        { variable: "p" },
+        { variable: "o" }
+      ],
+      where: {
+        bgp: {
+          patterns: [
+            {
+              subject: { variable: "s" },
+              predicate: { variable: "p" },
+              object: { variable: "o" }
+            }
+          ]
+        }
+      }
+    }
+  }
+}')
+
+
+$AXONED_PATH query wasm contract-state smart $COGNITARIUM_ADDR "$QUERY" --node $AXONE_NODE_RPC --output json | jq
+
+# ------------------------------
+# GET ALL ZONES
+# ------------------------------
+
+$AXONED_PATH --node $AXONE_NODE_RPC query wasm contract-state smart  \
+    $COGNITARIUM_ADDR \
+    '{"select":{"query":{"prefixes":[],"select":[{"variable":"zone"}],"where":{"bgp":{"patterns":[{"subject":{"variable":"credential"},"predicate":{"named_node":{"full":"dataverse:credential:body#subject"}},"object":{"variable":"zone"}},{"subject":{"variable":"credential"},"predicate":{"named_node":{"full":"dataverse:credential:body#type"}},"object":{"node":{"named_node":{"full":"https://w3id.org/axone/ontology/v4/schema/credential/zone/description/ZoneDescriptionCredential"}}}}]}}}}}' \
+    -o json \
+    | jq -r '.data.results.bindings[0].zone.value.full'
+
+# ------------------------------
+# GET ZONE DESCRIPTION CREDENTIALS
+# ------------------------------
+
+$AXONED_PATH --node $AXONE_NODE_RPC query wasm contract-state smart \
+    $COGNITARIUM_ADDR \
+    '{"select":{"query":{"prefixes":[],"select":[{"variable":"p"},{"variable":"o"}],"where":{"lateral_join":{"left":{"bgp":{"patterns":[{"subject":{"variable":"credential"},"predicate":{"named_node":{"full":"dataverse:credential:body#subject"}},"object":{"node":{"named_node":{"full":"did:key:zQ3shmDoRRiFmNzwDrnV2iPdgA9xaoAYsSq8GC9tGHsNL4R7a"}}}},{"subject":{"variable":"credential"},"predicate":{"named_node":{"full":"dataverse:credential:body#type"}},"object":{"node":{"named_node":{"full":"https://w3id.org/axone/ontology/v4/schema/credential/zone/description/ZoneDescriptionCredential"}}}}]}},"right":{"bgp":{"patterns":[{"subject":{"variable":"credential"},"predicate":{"variable":"dataverse:credential:body#claim"},"object":{"variable":"claim"}},{"subject":{"variable":"claim"},"predicate":{"variable":"p"},"object":{"variable":"o"}}]}}}}}}}' \
+    -o json \
+    | jq '.data.results.bindings'
+
+# ------------------------------
+# GET ZONE GOV CREDENTIALS
+# ------------------------------
+
+ $AXONED_PATH --node $AXONE_NODE_RPC query wasm contract-state smart \
+    $COGNITARIUM_ADDR \
+    '{"select":{"query":{"prefixes":[],"select":[{"variable":"p"},{"variable":"o"}],"where":{"lateral_join":{"left":{"bgp":{"patterns":[{"subject":{"variable":"credential"},"predicate":{"named_node":{"full":"dataverse:credential:body#subject"}},"object":{"node":{"named_node":{"full":"did:key:zQ3shmDoRRiFmNzwDrnV2iPdgA9xaoAYsSq8GC9tGHsNL4R7a"}}}},{"subject":{"variable":"credential"},"predicate":{"named_node":{"full":"dataverse:credential:body#type"}},"object":{"node":{"named_node":{"full":"https://w3id.org/axone/ontology/v4/schema/credential/governance/text/GovernanceTextCredential"}}}},{"subject":{"variable":"credential"},"predicate":{"variable":"dataverse:credential:body#claim"},"object":{"variable":"claim"}},{"subject":{"variable":"claim"},"predicate":{"named_node":{"full":"https://w3id.org/axone/ontology/v4/schema/credential/governance/text/isGovernedBy"}},"object":{"variable":"governance"}}]}},"right":{"bgp":{"patterns":[{"subject":{"variable":"governance"},"predicate":{"variable":"p"},"object":{"variable":"o"}}]}}}}}}}' \
+    -o json \
+    | jq '.data.results.bindings'
+
+
+# ------------------------------
+# GET ZONE GOV CREDENTIALS WITH DID
+# ------------------------------
+
+QUERY=$(jq -n --arg did "$ZONE_DID" '{
+  select: {
+    query: {
+      prefixes: [],
+      select: [
+        { variable: "credential" },
+        { variable: "p" },
+        { variable: "o" }
+      ],
+      where: {
+        lateral_join: {
+          left: {
+            bgp: {
+              patterns: [
+                {
+                  subject: { variable: "credential" },
+                  predicate: { named_node: { full: "dataverse:credential:body#subject" } },
+                  object: { node: { named_node: { full: $did } } }
+                },
+                {
+                  subject: { variable: "credential" },
+                  predicate: { named_node: { full: "dataverse:credential:body#type" } },
+                  object: { node: { named_node: { full: "https://w3id.org/axone/ontology/v4/schema/credential/governance/text/GovernanceTextCredential" } } }
+                },
+                {
+                  subject: { variable: "credential" },
+                  predicate: { variable: "dataverse:credential:body#claim" },
+                  object: { variable: "claim" }
+                },
+                {
+                  subject: { variable: "claim" },
+                  predicate: { named_node: { full: "https://w3id.org/axone/ontology/v4/schema/credential/governance/text/isGovernedBy" } },
+                  object: { variable: "governance" }
+                }
+              ]
+            }
+          },
+          right: {
+            bgp: {
+              patterns: [
+                {
+                  subject: { variable: "governance" },
+                  predicate: { variable: "p" },
+                  object: { variable: "o" }
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}')
+
+$AXONED_PATH query wasm contract-state smart $COGNITARIUM_ADDR "$QUERY" --node $AXONE_NODE_RPC --output json | jq
+
+
+
+# ------------------------------
+# GET ZONE GOV CODE
+# ------------------------------
+
+$AXONED_PATH --node $AXONE_NODE_RPC query wasm contract-state smart \
+  axone1c2a2l6swj7mcu6gp3v70a58m9sn6x5wsuh4ukr2tnra7hnnst3aqy07vye \
+  '{"program_code":{}}' -o json | jq -r '.data' | base64 -d
+
 ```
+
+
