@@ -1,13 +1,27 @@
 {
-  "name": "doctai2",
+  "name": "@axone-protocol/doctai",
   "version": "0.1.0",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:axone-protocol/doctai.git"
+  },
+  "license": "BSD-3-Clause",
+  "author": {
+    "name": "Axone",
+    "web": "https://axone.xyz"
+  },
+  "description": "AI agent demo running on the Axone protocol for collaborative medical diagnosis.",
   "scripts": {
     "dev": "next dev",
     "deb": "cross-env DEBUG=true NODE_OPTIONS='--inspect' node --max-old-space-size=16384 node_modules/.bin/next  -p 3000",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
+  },
+  "engines": {
+    "node": "^22.15",
+    "pnpm": "^10.10"
   },
   "dependencies": {
     "@cosmjs/cosmwasm-stargate": "^0.33.1",
@@ -40,5 +54,6 @@
     "markdownlint-cli2": "^0.17.2",
     "null-loader": "^4.0.1",
     "typescript": "^5"
-  }
+  },
+  "packageManager": "pnpm@10.10.0+sha512.d615db246fe70f25dcfea6d8d73dee782ce23e2245e3c4f6f888249fb568149318637dca73c2c5c8ef2a4ca0d5657fb9567188bfab47f566d1ee6ce987815c39"
 }
