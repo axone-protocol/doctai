@@ -26,25 +26,25 @@ Main features:
 
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-First, run the development server:
+Be sure to have the following properly installed:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- [Node.js](https://nodejs.org/en/) `v22.15` ([jod](https://nodejs.org/en/blog/release/v22.15.0/))
+- [pnpm](https://pnpm.io/) `v10.10`
+- [Docker](https://www.docker.com/)
+
+Then install dependencies:
+
+```sh
+pnpm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Start the development server:
 
-## Deploy on Vercel
+```sh
+pnpm dev
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Open <http://localhost:3000> in your browser to see the result.
 
 ## You want to get involved? 😍
 
