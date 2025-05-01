@@ -2,6 +2,16 @@
   "name": "@axone-protocol/doctai",
   "version": "0.1.0",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:axone-protocol/doctai.git"
+  },
+  "license": "BSD-3-Clause",
+  "author": {
+    "name": "Axone",
+    "web": "https://axone.xyz"
+  },
+  "description": "AI agent demo running on the Axone protocol for collaborative medical diagnosis.",
   "scripts": {
     "dev": "next dev",
     "deb": "cross-env DEBUG=true NODE_OPTIONS='--inspect' node --max-old-space-size=16384 node_modules/.bin/next  -p 3000",
