@@ -23,11 +23,11 @@ export class PostgreSQLDatabaseService {
                 // First, check if database exists and create it if not
                 const defaultSource = new DataSource({
                     type: "postgres",
-                    host: process.env.POSTGRES_HOST,
-                    port: Number(process.env.POSTGRES_PORT),
-                    username: process.env.POSTGRES_USER,
-                    password: process.env.POSTGRES_PASS,
-                    database: "postgres", // Connect to default postgres database first
+                    host: process.env.STORAGE_POSTGRES_HOST,
+                    port: Number(process.env.STORAGE_POSTGRES_PORT),
+                    username: process.env.STORAGE_POSTGRES_USER,
+                    password: process.env.STORAGE_POSTGRES_PASSWORD,
+                    database: process.env.STORAGE_POSTGRES_DATABASE,
                     entities: [],
                     synchronize: false,
                     logging: swLogsDBDebug
@@ -43,7 +43,7 @@ export class PostgreSQLDatabaseService {
                 const runner = defaultSource.createQueryRunner();
                 await runner.connect();
 
-                const dbName = process.env.POSTGRES_DB;
+                const dbName = process.env.STORAGE_POSTGRES_DATABASE;
                 const exists = await runner.query(
                     `SELECT 1 FROM pg_database WHERE datname = $1`,
                     [dbName]
@@ -62,11 +62,11 @@ export class PostgreSQLDatabaseService {
                 // Now connect to the application database
                 const appSource = new DataSource({
                     type: "postgres",
-                    host: process.env.POSTGRES_HOST,
-                    port: Number(process.env.POSTGRES_PORT),
-                    username: process.env.POSTGRES_USER,
-                    password: process.env.POSTGRES_PASS,
-                    database: process.env.POSTGRES_DB,
+                    host: process.env.STORAGE_POSTGRES_HOST,
+                    port: Number(process.env.STORAGE_POSTGRES_PORT),
+                    username: process.env.STORAGE_POSTGRES_USER,
+                    password: process.env.STORAGE_POSTGRES_PASSWORD,
+                    database: process.env.STORAGE_POSTGRES_DATABASE,
                     entities: [User, Chat, ChatMessage],
                     synchronize: true, // auto sync schema
                     logging: swLogsDBDebug

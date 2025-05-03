@@ -33,13 +33,37 @@ Be sure to have the following properly installed:
 - [pnpm](https://pnpm.io/) `v10.10`
 - [Docker](https://www.docker.com/)
 
-Then install dependencies:
+### Setup environment variables
+
+Copy the example file and edit if needed:
+
+```sh
+cp .env.example .env
+```
+
+### Start the PostgreSQL database
+
+Use Docker Compose to launch the [PostgreSQL](https://www.postgresql.org/) database:
+
+```sh
+docker compose up -d
+```
+
+If you want to use [Adminer](https://www.adminer.org/en/) (web UI for PostgreSQL), run with the debug profile:
+
+```sh
+docker compose --profile debug up -d
+```
+
+### Install dependencies
+
+Install the required dependencies using `pnpm`:
 
 ```sh
 pnpm install
 ```
 
-Start the development server:
+### Start the development server
 
 ```sh
 pnpm dev
