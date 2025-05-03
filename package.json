@@ -43,7 +43,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@keplr-wallet/types": "^0.12.216",
-    "@types/node": "^20",
+    "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/secp256k1": "^4.0.6",
