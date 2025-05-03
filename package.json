@@ -27,7 +27,7 @@
     "@cosmjs/cosmwasm-stargate": "^0.33.1",
     "@cosmjs/crypto": "^0.33.1",
     "@cosmjs/encoding": "^0.33.1",
-    "@keplr-wallet/cosmos": "^0.12.219",
+    "@keplr-wallet/cosmos": "^0.12.230",
     "bs58": "^6.0.0",
     "next": "15.2.5",
     "next-auth": "^4.24.11",
