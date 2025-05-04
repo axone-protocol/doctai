@@ -1,0 +1,16 @@
+<did:key:zQ3shgHvy6b16afQRDqyUb94xAhU7wTEqLPygqCFz1yE2KtMA> <https://w3id.org/axone/ontology/v4/schema/credential/digital-service/description/hasCategory> <https://w3id.org/axone/ontology/v4/thesaurus/digital-service-category/Storage> .
+<did:key:zQ3shgHvy6b16afQRDqyUb94xAhU7wTEqLPygqCFz1yE2KtMA> <https://w3id.org/axone/ontology/v4/schema/credential/digital-service/description/hasDescription> "Minio S3" .
+<did:key:zQ3shgHvy6b16afQRDqyUb94xAhU7wTEqLPygqCFz1yE2KtMA> <https://w3id.org/axone/ontology/v4/schema/credential/digital-service/description/hasTag> "Cloud" .
+<did:key:zQ3shgHvy6b16afQRDqyUb94xAhU7wTEqLPygqCFz1yE2KtMA> <https://w3id.org/axone/ontology/v4/schema/credential/digital-service/description/hasTag> "Storage" .
+<did:key:zQ3shgHvy6b16afQRDqyUb94xAhU7wTEqLPygqCFz1yE2KtMA> <https://w3id.org/axone/ontology/v4/schema/credential/digital-service/description/hasTitle> "My Minio" .
+<https://w3id.org/axone/ontology/v4/schema/credential/digital-service/description/9fb8bddb-1fa1-4637-80bf-e1e76f626abc> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/axone/ontology/v4/schema/credential/digital-service/description/DigitalServiceDescriptionCredential> .
+<https://w3id.org/axone/ontology/v4/schema/credential/digital-service/description/9fb8bddb-1fa1-4637-80bf-e1e76f626abc> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.w3.org/2018/credentials#VerifiableCredential> .
+<https://w3id.org/axone/ontology/v4/schema/credential/digital-service/description/9fb8bddb-1fa1-4637-80bf-e1e76f626abc> <https://w3id.org/security#proof> _:b0 .
+<https://w3id.org/axone/ontology/v4/schema/credential/digital-service/description/9fb8bddb-1fa1-4637-80bf-e1e76f626abc> <https://www.w3.org/2018/credentials#credentialSubject> <did:key:zQ3shgHvy6b16afQRDqyUb94xAhU7wTEqLPygqCFz1yE2KtMA> .
+<https://w3id.org/axone/ontology/v4/schema/credential/digital-service/description/9fb8bddb-1fa1-4637-80bf-e1e76f626abc> <https://www.w3.org/2018/credentials#issuanceDate> "2025-05-03T21:35:29Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
+<https://w3id.org/axone/ontology/v4/schema/credential/digital-service/description/9fb8bddb-1fa1-4637-80bf-e1e76f626abc> <https://www.w3.org/2018/credentials#issuer> <did:key:zQ3shN45CkRnjackWYwM191q2bNanAYeP1ZvxoAEPaV4ZpgZo> .
+_:b1 <http://purl.org/dc/terms/created> "2025-05-03T18:36:28.064929843-03:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> _:b0 .
+_:b1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/security#EcdsaSecp256k1Signature2019> _:b0 .
+_:b1 <https://w3id.org/security#jws> "eyJhbGciOiJ1bmtub3duIiwiYjY0IjpmYWxzZSwiY3JpdCI6WyJiNjQiXX0..ZPgYlOxhrV_hN2dFQze6clwxFYJ7dwCm1POI9SBX-BZnq1jiv-D-0Vt09lOBldfwPD7sTBkXyLgViXiwpInmZQ" _:b0 .
+_:b1 <https://w3id.org/security#proofPurpose> <https://w3id.org/security#assertionMethod> _:b0 .
+_:b1 <https://w3id.org/security#verificationMethod> <did:key:zQ3shN45CkRnjackWYwM191q2bNanAYeP1ZvxoAEPaV4ZpgZo#zQ3shN45CkRnjackWYwM191q2bNanAYeP1ZvxoAEPaV4ZpgZo> _:b0 .

@@ -1,0 +1,24 @@
+{
+  "@context": [
+    "https://www.w3.org/2018/credentials/v1",
+    "https://w3id.org/axone/ontology/v4/schema/credential/digital-service/description/"
+  ],
+  "type": ["VerifiableCredential", "DigitalServiceDescriptionCredential"],
+  "id": "https://w3id.org/axone/ontology/v4/schema/credential/digital-service/description/9fb8bddb-1fa1-4637-80bf-e1e76f626abc",
+  "credentialSubject": {
+    "id": "did:key:zQ3shgHvy6b16afQRDqyUb94xAhU7wTEqLPygqCFz1yE2KtMA",
+    "hasCategory": "https://w3id.org/axone/ontology/v4/thesaurus/digital-service-category/Storage",
+    "hasDescription": "Minio S3",
+    "hasPublisher": "Me",
+    "hasTag": [
+      "Storage",
+      "Cloud"
+    ],
+    "hasTitle": "My Minio"
+  },
+  "issuanceDate": "2025-05-03T21:35:29Z",
+  "issuer": {
+    "id": "did:key:zQ3shN45CkRnjackWYwM191q2bNanAYeP1ZvxoAEPaV4ZpgZo",
+    "name": "doctai-issuer-wallet"
+  }
+}
