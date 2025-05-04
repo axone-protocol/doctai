@@ -1,7 +1,17 @@
 {
-  "name": "doctai2",
+  "name": "@axone-protocol/doctai",
   "version": "0.1.0",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:axone-protocol/doctai.git"
+  },
+  "license": "BSD-3-Clause",
+  "author": {
+    "name": "Axone",
+    "web": "https://axone.xyz"
+  },
+  "description": "AI agent demo running on the Axone protocol for collaborative medical diagnosis.",
   "scripts": {
     "dev": "next dev",
     "deb": "cross-env DEBUG=true NODE_OPTIONS='--inspect' node --max-old-space-size=16384 node_modules/.bin/next  -p 3000",
@@ -9,13 +19,17 @@
     "start": "next start",
     "lint": "next lint"
   },
+  "engines": {
+    "node": "^22.15",
+    "pnpm": "^10.10"
+  },
   "dependencies": {
     "@cosmjs/cosmwasm-stargate": "^0.33.1",
     "@cosmjs/crypto": "^0.33.1",
     "@cosmjs/encoding": "^0.33.1",
-    "@keplr-wallet/cosmos": "^0.12.219",
+    "@keplr-wallet/cosmos": "^0.12.230",
     "bs58": "^6.0.0",
-    "next": "15.2.5",
+    "next": "15.3.1",
     "next-auth": "^4.24.11",
     "pg": "^8.14.1",
     "react": "^19.0.0",
@@ -29,16 +43,17 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@keplr-wallet/types": "^0.12.216",
-    "@types/node": "^20",
+    "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/secp256k1": "^4.0.6",
     "cross-env": "^7.0.3",
     "eslint": "^9",
-    "eslint-config-next": "15.2.5",
+    "eslint-config-next": "15.3.1",
     "ignore-loader": "^0.1.2",
     "markdownlint-cli2": "^0.17.2",
     "null-loader": "^4.0.1",
     "typescript": "^5"
-  }
+  },
+  "packageManager": "pnpm@10.10.0+sha512.d615db246fe70f25dcfea6d8d73dee782ce23e2245e3c4f6f888249fb568149318637dca73c2c5c8ef2a4ca0d5657fb9567188bfab47f566d1ee6ce987815c39"
 }
