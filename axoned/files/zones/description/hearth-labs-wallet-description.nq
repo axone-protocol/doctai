@@ -4,14 +4,14 @@
 <did:key:zQ3shmDoRRiFmNzwDrnV2iPdgA9xaoAYsSq8GC9tGHsNL4R7a> <https://w3id.org/axone/ontology/v4/schema/credential/zone/description/hasTag> "Health" .
 <did:key:zQ3shmDoRRiFmNzwDrnV2iPdgA9xaoAYsSq8GC9tGHsNL4R7a> <https://w3id.org/axone/ontology/v4/schema/credential/zone/description/hasTitle> "Hearth Labs" .
 <did:key:zQ3shmDoRRiFmNzwDrnV2iPdgA9xaoAYsSq8GC9tGHsNL4R7a> <https://w3id.org/axone/ontology/v4/schema/credential/zone/description/hasTopic> <https://w3id.org/axone/ontology/v4/thesaurus/topic/health> .
-<https://w3id.org/axone/ontology/v4/schema/credential/zone/description/d99cfd2e-d2ae-43af-9d38-ed16ceeb86ac> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/axone/ontology/v4/schema/credential/zone/description/ZoneDescriptionCredential> .
-<https://w3id.org/axone/ontology/v4/schema/credential/zone/description/d99cfd2e-d2ae-43af-9d38-ed16ceeb86ac> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.w3.org/2018/credentials#VerifiableCredential> .
-<https://w3id.org/axone/ontology/v4/schema/credential/zone/description/d99cfd2e-d2ae-43af-9d38-ed16ceeb86ac> <https://w3id.org/security#proof> _:b0 .
-<https://w3id.org/axone/ontology/v4/schema/credential/zone/description/d99cfd2e-d2ae-43af-9d38-ed16ceeb86ac> <https://www.w3.org/2018/credentials#credentialSubject> <did:key:zQ3shmDoRRiFmNzwDrnV2iPdgA9xaoAYsSq8GC9tGHsNL4R7a> .
-<https://w3id.org/axone/ontology/v4/schema/credential/zone/description/d99cfd2e-d2ae-43af-9d38-ed16ceeb86ac> <https://www.w3.org/2018/credentials#issuanceDate> "2025-04-22T22:59:13Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
-<https://w3id.org/axone/ontology/v4/schema/credential/zone/description/d99cfd2e-d2ae-43af-9d38-ed16ceeb86ac> <https://www.w3.org/2018/credentials#issuer> <did:key:zQ3shN45CkRnjackWYwM191q2bNanAYeP1ZvxoAEPaV4ZpgZo> .
-_:b1 <http://purl.org/dc/terms/created> "2025-04-22T19:59:28.739345461-03:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> _:b0 .
+<https://w3id.org/axone/ontology/v4/schema/credential/zone/description/c3058dd1-5e02-4143-bdd6-916f332fe25c> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/axone/ontology/v4/schema/credential/zone/description/ZoneDescriptionCredential> .
+<https://w3id.org/axone/ontology/v4/schema/credential/zone/description/c3058dd1-5e02-4143-bdd6-916f332fe25c> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.w3.org/2018/credentials#VerifiableCredential> .
+<https://w3id.org/axone/ontology/v4/schema/credential/zone/description/c3058dd1-5e02-4143-bdd6-916f332fe25c> <https://w3id.org/security#proof> _:b0 .
+<https://w3id.org/axone/ontology/v4/schema/credential/zone/description/c3058dd1-5e02-4143-bdd6-916f332fe25c> <https://www.w3.org/2018/credentials#credentialSubject> <did:key:zQ3shmDoRRiFmNzwDrnV2iPdgA9xaoAYsSq8GC9tGHsNL4R7a> .
+<https://w3id.org/axone/ontology/v4/schema/credential/zone/description/c3058dd1-5e02-4143-bdd6-916f332fe25c> <https://www.w3.org/2018/credentials#issuanceDate> "2025-05-03T20:41:41Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
+<https://w3id.org/axone/ontology/v4/schema/credential/zone/description/c3058dd1-5e02-4143-bdd6-916f332fe25c> <https://www.w3.org/2018/credentials#issuer> <did:key:zQ3shN45CkRnjackWYwM191q2bNanAYeP1ZvxoAEPaV4ZpgZo> .
+_:b1 <http://purl.org/dc/terms/created> "2025-05-03T17:41:56.343977131-03:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> _:b0 .
 _:b1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://w3id.org/security#EcdsaSecp256k1Signature2019> _:b0 .
-_:b1 <https://w3id.org/security#jws> "eyJhbGciOiJ1bmtub3duIiwiYjY0IjpmYWxzZSwiY3JpdCI6WyJiNjQiXX0..cGUBX_Zb9PUtfpmAXjxBoT638qbNfuLN5k7GS1hxzkQEyL7oTl84H6u39vZAmfsGyOkCus9FN4vhhWLJBJrCXg" _:b0 .
+_:b1 <https://w3id.org/security#jws> "eyJhbGciOiJ1bmtub3duIiwiYjY0IjpmYWxzZSwiY3JpdCI6WyJiNjQiXX0..KHPiOZsX7_ic9AMZDJS_f5mY2QIeq3mGirf3bvORgHYzcJ8AJ6YZYZXwyQFU68pUwE7hNhMfJrduujOSn_KJ2g" _:b0 .
 _:b1 <https://w3id.org/security#proofPurpose> <https://w3id.org/security#assertionMethod> _:b0 .
 _:b1 <https://w3id.org/security#verificationMethod> <did:key:zQ3shN45CkRnjackWYwM191q2bNanAYeP1ZvxoAEPaV4ZpgZo#zQ3shN45CkRnjackWYwM191q2bNanAYeP1ZvxoAEPaV4ZpgZo> _:b0 .
