@@ -5,27 +5,33 @@
 
 - [README MINIO STORAGE SERVICE](#readme-minio-storage-service)
   - [Table of Contents](#table-of-contents)
-  - [Create Minio S3 Storage Service Description](#create-minio-s3-storage-service-description)
-    - [Step 1: Set Env for Service Description Credential](#step-1-set-env-for-service-description-credential)
-    - [Step 2: Key and DID for Service Credentials](#step-2-key-and-did-for-service-credentials)
-    - [Step 3: Create Service Description Credential](#step-3-create-service-description-credential)
-    - [Step 4: Sign and Submit Service Description Credential](#step-4-sign-and-submit-service-description-credential)
-  - [Create Minio S3 Storage Service Governance](#create-minio-s3-storage-service-governance)
-    - [Step 1: Set Env for Service Governance Credential](#step-1-set-env-for-service-governance-credential)
+  - [Set Up Enviromental Variables](#set-up-enviromental-variables)
+  - [Set Up MinIO Wallet](#set-up-minio-wallet)
+    - [Create MinIO Wallet](#create-minio-wallet)
+    - [Get AXONE Tokens](#get-axone-tokens)
+    - [Check MinIO Wallet Balance](#check-minio-wallet-balance)
+  - [Create MinIO S3 Storage Service Description](#create-minio-s3-storage-service-description)
+    - [Step 1: Set Up Enviromental Variables for Service Description Credential](#step-1-set-up-enviromental-variables-for-service-description-credential)
+    - [Step 2: Create Service Description Credential](#step-2-create-service-description-credential)
+    - [Step 3: Sign and Submit Service Description Credential](#step-3-sign-and-submit-service-description-credential)
+  - [Create MinIO S3 Storage Service Governance](#create-minio-s3-storage-service-governance)
+    - [Step 1: Set Enviromental Variables for Service Governance Credential](#step-1-set-enviromental-variables-for-service-governance-credential)
     - [Step 2: Create Service Governance Code](#step-2-create-service-governance-code)
     - [Step 3: Submit Service Governance Code](#step-3-submit-service-governance-code)
     - [Step 4: Create Service Governance Credentials](#step-4-create-service-governance-credentials)
     - [Step 5: Sign and Submit Service Governance Credentials](#step-5-sign-and-submit-service-governance-credentials)
     - [Step 7: Testing Service Governance Code](#step-7-testing-service-governance-code)
-  - [Create Minio S3 Storage Service Zone Membership](#create-minio-s3-storage-service-zone-membership)
+  - [Create MinIO S3 Storage Service Zone Membership](#create-minio-s3-storage-service-zone-membership)
     - [Step 1: Create Service Zone Membership Credential](#step-1-create-service-zone-membership-credential)
     - [Step 4: Sign and Submit Service Zone Membership Credential](#step-4-sign-and-submit-service-zone-membership-credential)
   - [Querying Cognitarium](#querying-cognitarium)
-    - [Get Zone DID from Minio Service DID using Zone Membership Credential](#get-zone-did-from-minio-service-did-using-zone-membership-credential)
+    - [Get All Triples](#get-all-triples)
+    - [Get MinIO Gov Address](#get-minio-gov-address)
+    - [Get Zone DID from MinIO Service DID using Zone Membership Credential](#get-zone-did-from-minio-service-did-using-zone-membership-credential)
 
-## Create Minio S3 Storage Service Description
+## Set Up Enviromental Variables
 
-### Step 1: Set Env for Service Description Credential
+Use exported variables in [../logs/implementation.log] to set up the environment for the MinIO S3 Storage Service. This includes paths for the Axone node, wallet, and other necessary configurations.
 
 ```bash
 WORK_DIR_AXONE="/home/manuelpadilla/sources/reposUbuntu/AXONE/doctai/axoned"
@@ -69,26 +75,23 @@ ZONE_CRED_GOV_TX_HASH="808B22DF602C8B58BF32DA4CEE8B50EA0E17ED6430684AC101017D92E
 
 # Load helper functions
 source $WORK_DIR_AXONE/scripts/helpers.sh
-
 ```
 
+## Set Up MinIO Wallet
+
+### Create MinIO Wallet
+
 ```bash
-export MINIO_DESC_PATH=$WORK_DIR_AXONE/files/minio/description
-mkdir -p $MINIO_DESC_PATH
+
+# Create MinIO Issuer Wallet
 
 export MINIO_WALLET=minio-wallet
 
-echo "MINIO_DESC_PATH=\"$MINIO_DESC_PATH\""
-echo "MINIO_DESC_PATH=\"$MINIO_DESC_PATH\"" >> $LOG_PATH/implementation.log
 echo "MINIO_WALLET=\"$MINIO_WALLET\""
 echo "MINIO_WALLET=\"$MINIO_WALLET\"" >> $LOG_PATH/implementation.log
 
-```
-
-### Step 2: Key and DID for Service Credentials
-
-```bash
 $AXONED_PATH keys add $MINIO_WALLET $KEYRING_BACKEND
+
 ```
 
 ```bash
@@ -105,28 +108,80 @@ actress outer equal gain brisk ship dawn patch sock culture junior wise banner t
 ```
 
 ```bash
+# MInIO Issuer Wallet configuration 
+
 # Get minio did o DID
 export MINIO_ADDRESS=$($AXONED_PATH keys show $MINIO_WALLET -a $KEYRING_BACKEND)
 export MINIO_DID=$($AXONED_PATH keys show $MINIO_WALLET -k $KEYRING_BACKEND)
 
-export MINIO_PHRASE="actress outer equal gain brisk ship dawn patch sock culture junior wise banner train panic demise nothing eye tortoise north vibrant people gym shed"
+export MINIO_MNEMONIC_PHRASE="actress outer equal gain brisk ship dawn patch sock culture junior wise banner train panic demise nothing eye tortoise north vibrant people gym shed"
 
 echo "MINIO_ADDRESS=\"$MINIO_ADDRESS\""
 echo "MINIO_ADDRESS=\"$MINIO_ADDRESS\"" >> $LOG_PATH/implementation.log
 echo "MINIO_DID=\"$MINIO_DID\""
 echo "MINIO_DID=\"$MINIO_DID\"" >> $LOG_PATH/implementation.log
-echo "MINIO_PHRASE=\"$MINIO_PHRASE\""
-echo "MINIO_PHRASE=\"$MINIO_PHRASE\"" >> $LOG_PATH/implementation.log
+echo "MINIO_MNEMONIC_PHRASE=\"$MINIO_MNEMONIC_PHRASE\""
+echo "MINIO_MNEMONIC_PHRASE=\"$MINIO_MNEMONIC_PHRASE\"" >> $LOG_PATH/implementation.log
 ```
 
-### Step 3: Create Service Description Credential
+### Get AXONE Tokens
+
+Make sure it has balance.
+
+Follow:  
+
+<https://docs.axone.xyz/tutorials/keplr-1>  
+
+Faucet (Request funds with AXONE chain address):  
+
+<https://faucet.axone.xyz/>
+
+### Check MinIO Wallet Balance
+
+```bash
+$AXONED_PATH query bank balances $MINIO_ADDRESS --node $AXONE_NODE_RPC
+```
+
+```bash
+balances:
+- amount: "1000000"
+  denom: uaxone
+pagination:
+  total: "1"
+```
+
+```bash
+$AXONED_PATH query auth account $MINIO_ADDRESS --node $AXONE_NODE_RPC
+```
+
+```bash
+account:
+  type: cosmos-sdk/BaseAccount
+  value:
+    account_number: "47205"
+    address: axone1nxg9q8qv8nyu5yt62c3kqdrsm4fd6earylz2r7
+```
+
+## Create MinIO S3 Storage Service Description
+
+### Step 1: Set Up Enviromental Variables for Service Description Credential
+
+```bash
+export MINIO_DESC_PATH=$WORK_DIR_AXONE/files/minio/description
+mkdir -p $MINIO_DESC_PATH
+
+echo "MINIO_DESC_PATH=\"$MINIO_DESC_PATH\""
+echo "MINIO_DESC_PATH=\"$MINIO_DESC_PATH\"" >> $LOG_PATH/implementation.log
+```
+
+### Step 2: Create Service Description Credential
 
 ```bash
 export MINIO_CRED_DESCRIPTION_ID=$(uuidgen)
 echo "MINIO_CRED_DESCRIPTION_ID=\"$MINIO_CRED_DESCRIPTION_ID\""
 echo "MINIO_CRED_DESCRIPTION_ID=\"$MINIO_CRED_DESCRIPTION_ID\"" >> $LOG_PATH/implementation.log
 
-# Create service description
+# Create MinIO Service Description
 cat <<EOF | envsubst > $MINIO_DESC_PATH/$MINIO_WALLET-description.jsonld
 {
   "@context": [
@@ -138,13 +193,13 @@ cat <<EOF | envsubst > $MINIO_DESC_PATH/$MINIO_WALLET-description.jsonld
   "credentialSubject": {
     "id": "$MINIO_DID",
     "hasCategory": "https://w3id.org/axone/ontology/$ONTOLOGY_MAYOR_VERSION/thesaurus/digital-service-category/Storage",
-    "hasDescription": "Minio S3",
+    "hasDescription": "MinIO S3",
     "hasPublisher": "Me",
     "hasTag": [
       "Storage",
       "Cloud"
     ],
-    "hasTitle": "My Minio"
+    "hasTitle": "My MinIO"
   },
   "issuanceDate": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
   "issuer": {
@@ -155,11 +210,12 @@ cat <<EOF | envsubst > $MINIO_DESC_PATH/$MINIO_WALLET-description.jsonld
 EOF
 ```
 
-### Step 4: Sign and Submit Service Description Credential
+### Step 3: Sign and Submit Service Description Credential
 
 Sign and encode the zone credentials:
 
 ```bash
+
 $AXONED_PATH credential sign $MINIO_DESC_PATH/$MINIO_WALLET-description.jsonld \
     $KEYRING_BACKEND --from $ISSUER_WALLET | jsonld toRdf -q - > $MINIO_DESC_PATH/$MINIO_WALLET-description.nq
 
@@ -183,9 +239,9 @@ echo "MINIO_CRED_DESCRIPTION_TX_HASH=\"$MINIO_CRED_DESCRIPTION_TX_HASH\""
 echo "MINIO_CRED_DESCRIPTION_TX_HASH=\"$MINIO_CRED_DESCRIPTION_TX_HASH\"" >> $LOG_PATH/implementation.log
 ```
 
-## Create Minio S3 Storage Service Governance
+## Create MinIO S3 Storage Service Governance
 
-### Step 1: Set Env for Service Governance Credential
+### Step 1: Set Enviromental Variables for Service Governance Credential
 
 ```bash
 export MINIO_GOV_PATH=$WORK_DIR_AXONE/files/minio/governance
@@ -200,12 +256,12 @@ echo "MINIO_GOV_PATH=\"$MINIO_GOV_PATH\"" >> $LOG_PATH/implementation.log
 ```bash
 # Create service governance Prolog rules
 cat <<EOF | envsubst > $MINIO_GOV_PATH/$MINIO_WALLET-governance.pl
-% Minio S3 Governance
+% MinIO S3 Governance
 % ===========================
 
-:- discontiguous([title/2, partOf/2, chapter/1, section/1, subSection/1, article/1, paragraph/4]).
+:- discontiguous([title/2, partOf/2, chapter/1, section/1, subSection/1, article/1, paragraph/2]).
 
-% Main structure
+% Structure
 title('1', 'MinIO Service').
 chapter('1').
 
@@ -215,11 +271,11 @@ chapter('1').
         title('1.1.1', 'Public Access'). partOf('1.1.1', '1.1').
         subSection('1.1.1').
 
-            title('1.1.1.1', 'Use'). partOf('1.1.1.1', '1.1.1').
+            title('1.1.1.1', 'Read'). partOf('1.1.1.1', '1.1.1').
             article('1.1.1.1').
 
-                title('1.1.1.1.1', 'Use is allowed for everyone'). partOf('1.1.1.1.1', '1.1.1.1').
-                paragraph('1.1.1.1.1', permitted, _, 'use').
+                title('1.1.1.1.1', 'Read is allowed for everyone'). partOf('1.1.1.1.1', '1.1.1.1').
+                paragraph('1.1.1.1.1', permitted).
 
         title('1.1.2', 'Restricted Access'). partOf('1.1.2', '1.1').
         subSection('1.1.2').
@@ -228,13 +284,19 @@ chapter('1').
             article('1.1.2.1').
 
                 title('1.1.2.1.1', 'Store is allowed for everyone'). partOf('1.1.2.1.1', '1.1.2.1').
-                paragraph('1.1.2.1.1', permitted, _, 'store').
+                paragraph('1.1.2.1.1', permitted).
 
-            title('1.1.2.2', 'Read'). partOf('1.1.2.2', '1.1.2').
+            title('1.1.2.2', 'Validate File Types'). partOf('1.1.2.2', '1.1.2').
             article('1.1.2.2').
 
-                title('1.1.2.2.1', 'Read is allowed for everyone'). partOf('1.1.2.2.1', '1.1.2.2').
-                paragraph('1.1.2.2.1', permitted, _, 'read').
+                paragraph('1.1.2.2.1', permitted).
+                paragraph('1.1.2.2.2', permitted).
+
+            title('1.1.2.3', 'Validate File Sizes'). partOf('1.1.2.3', '1.1.2').
+            article('1.1.2.3').
+
+                title('1.1.2.3.1', 'Maximum file size is 50MB'). partOf('1.1.2.3.1', '1.1.2.3').
+                paragraph('1.1.2.3.1', permitted).
 
         title('1.1.3', 'Governance'). partOf('1.1.3', '1.1').
         subSection('1.1.3').
@@ -242,19 +304,46 @@ chapter('1').
             title('1.1.3.1', 'Change'). partOf('1.1.3.1', '1.1.3').
             article('1.1.3.1').
 
-                title('1.1.3.1.1', 'Governance change is allowed for everyone'). partOf('1.1.3.1.1', '1.1.3.1').
-                paragraph('1.1.3.1.1', permitted, _, 'governance:change').
+                paragraph('1.1.3.1.1', permitted).
 
-% Action resolution
-resolved_action_context(Who, _, Context) :- Context = Who.
+% File size helpers
+max_file_size('52428800').
 
-% SDK required predicates
-tell(Who, Action, Result, Evidence) :-
-    resolved_action_context(Who, Action, Context),
-    bagof(P:Modality, paragraph(P, Modality, Context, Action), Evidence),
-    (   member(_: permitted, Evidence) -> Result = permitted
-    ;   Result = prohibited
-    ).
+trim_leading_zeros(S, T) :-
+    atom_chars(S, Cs),
+    drop_zeros(Cs, Clean),
+    ( Clean = [] -> T = '0' ; atom_chars(T, Clean) ).
+
+drop_zeros(['0'|T], R) :- drop_zeros(T, R).
+drop_zeros(L, L).
+
+pad_left_zeros(S, Padded) :-
+    atom_length(S, Len),
+    Missing is 8 - Len,
+    Missing >= 0,
+    length(Zeros, Missing),
+    maplist(=('0'), Zeros),
+    atom_chars(ZeroAtom, Zeros),
+    atom_concat(ZeroAtom, S, Padded).
+
+% Core rules
+tell(_, 'read', permitted, ['1.1.1.1.1':permitted]).
+tell(_, 'store', permitted, ['1.1.2.1.1':permitted]).
+tell(_, 'validate:file:text/csv', permitted, ['1.1.2.2.1':permitted]).
+tell(_, 'validate:file:application/json', permitted, ['1.1.2.2.2':permitted]).
+tell(_, 'governance:change', permitted, ['1.1.3.1.1':permitted]).
+
+% Dynamic rule with safety
+tell(_, Action, permitted, ['1.1.2.3.1':permitted]) :-
+    nonvar(Action),
+    atom_concat('validate:file:size:', SizeAtomRaw, Action),
+    trim_leading_zeros(SizeAtomRaw, SizeAtom),
+    pad_left_zeros(SizeAtom, PaddedSize),
+    max_file_size(Max),
+    PaddedSize @=< Max.
+
+% Default fallback
+tell(_, _, prohibited, []).
 
 tell_all(Who, Actions) :-
     bagof(Action:Result:Evidence, tell(Who, Action, Result, Evidence), Actions).
@@ -262,7 +351,21 @@ tell_all(Who, Actions) :-
 tell_permitted_actions(Who, PermittedActions) :-
     tell_all(Who, Actions),
     findall(PermittedAction, member(PermittedAction:permitted:_, Actions), PermittedActions).
+
 EOF
+
+# Check the generated file
+PROGRAM=$(cat "$MINIO_GOV_PATH/$MINIO_WALLET-governance.pl")
+$AXONED_PATH query logic ask \
+  --node "$AXONE_NODE_RPC" \
+  --program "$PROGRAM" \
+  "tell(_, 'read', R, E)."
+
+$AXONED_PATH query logic ask \
+  --node "$AXONE_NODE_RPC" \
+  --program "$PROGRAM" \
+  "tell(_, 'validate:file:size:13522330', R, E)."
+
 ```
 
 ### Step 3: Submit Service Governance Code
@@ -365,33 +468,63 @@ echo "MINIO_CRED_GOV_TX_HASH=\"$MINIO_CRED_GOV_TX_HASH\"" >> $LOG_PATH/implement
 ### Step 7: Testing Service Governance Code
 
 ```bash
-# Identidad a testear
-export TEST_DID="did:key:z16DtrNpHS569CKDUFaXGzAMnLdMoaanxHqqsPnd91ZnyufLL"
-export TEST_ACTION="store"     # acción a verificar
+# --------------------------
+# Constants
+# --------------------------
 
-# Contrato law-stone
+export TEST_DID="did:key:z16DtrNpHS569CKDUFaXGzAMnLdMoaanxHqqsPnd91ZnyufLL"
 export LAW_STONE_ADDR=$MINIO_GOV_CODE_ADDR
 
-# ------------------------------
-# ASK via gRPC (tell_permitted_actions)
-# ------------------------------
+# --------------------------
+# Function: ask_query
+# --------------------------
+ask_query() {
+  local QUERY="$1"
+  local LABEL="$2"
 
-export PROLOG_QUERY="tell_permitted_actions('$TEST_DID', Actions)."
-export ENCODED_QUERY=$(echo -n "{\"ask\":{\"query\":\"$PROLOG_QUERY\"}}" | base64 -w 0)
+  echo ""
+  echo "🔍 $LABEL"
+  local ENCODED=$(echo -n "{\"ask\":{\"query\":\"$QUERY\"}}" | base64 -w 0)
 
-echo "🔍 GRPC tell_permitted_actions for DID=\"$TEST_DID\""
-
-export RESULT_GRPC=$(grpcurl -plaintext -d @ \
-  $AXONE_NODE_GRPC cosmwasm.wasm.v1.Query/SmartContractState <<EOF
+  local RESULT=$(grpcurl -plaintext -d @ \
+    $AXONE_NODE_GRPC cosmwasm.wasm.v1.Query/SmartContractState <<EOF
 {
   "address": "$LAW_STONE_ADDR",
-  "query_data": "$ENCODED_QUERY"
+  "query_data": "$ENCODED"
 }
 EOF
-)
+  )
 
-# Extraer y decodificar el campo 'data'
-echo "$RESULT_GRPC" | jq -r '.data' | base64 -d | jq
+  echo "$RESULT" | jq -r '.data' | base64 -d | jq
+}
+# --------------------------
+# Test 1: tell_permitted_actions (overview)
+# --------------------------
+
+ask_query "tell_permitted_actions('$TEST_DID', Actions)." "Permitted actions overview"
+
+# --------------------------
+# Test 2: Specific actions
+# --------------------------
+
+ask_query "tell('$TEST_DID', 'store', Result, Evidence)." "Check permission: store"
+ask_query "tell('$TEST_DID', 'read', Result, Evidence)." "Check permission: read"
+
+# --------------------------
+# Test 3: File type validations
+# --------------------------
+
+ask_query "tell('$TEST_DID', 'validate:file:text/csv', Result, Evidence)." "Validate type: text/csv"
+ask_query "tell('$TEST_DID', 'validate:file:application/json', Result, Evidence)." "Validate type: application/json"
+ask_query "tell('$TEST_DID', 'validate:file:application/pdf', Result, Evidence)." "Validate type: INVALID (application/pdf)"
+
+# --------------------------
+# Test 4: File size validations
+# --------------------------
+
+ask_query "tell('$TEST_DID', 'validate:file:size:52428800', Result, Evidence)." "Validate size: 50MB (valid)"
+ask_query "tell('$TEST_DID', 'validate:file:size:123456', Result, Evidence)." "Validate size: 123 KB (valid)"
+ask_query "tell('$TEST_DID', 'validate:file:size:99999999', Result, Evidence)." "Validate size: 99MB (INVALID)"
 
 # ------------------------------
 # ASK via AXONED (tell/4)
@@ -411,7 +544,7 @@ export RESULT_RPC=$($AXONED_PATH query wasm contract-state smart $LAW_STONE_ADDR
 echo "$RESULT_RPC" | jq
 ```
 
-## Create Minio S3 Storage Service Zone Membership
+## Create MinIO S3 Storage Service Zone Membership
 
 ### Step 1: Create Service Zone Membership Credential
 
@@ -473,99 +606,67 @@ echo "MINIO_CRED_ZONE_MEMBERSHIP_TX_HASH=\"$MINIO_CRED_ZONE_MEMBERSHIP_TX_HASH\"
 
 ## Querying Cognitarium
 
-### Get Zone DID from Minio Service DID using Zone Membership Credential
-
-This query retrieves the Zone DID associated with a given service (Minio) DID based on the Zone Membership Credential.
+### Get All Triples
 
 ```bash
 
-export QUERY=$(jq -n --arg minioDid "$MINIO_DID" '{
+QUERY=$(jq -n  '
+{
+  "select": 
+  {
+    "query": 
+    {
+      "prefixes": [],
+      "select": [
+          {
+              "variable": "subject"
+          },
+          {
+              "variable": "predicate"
+          },
+          {
+              "variable": "object"
+          }
+      ],
+      where: 
+      {
+        bgp: 
+        {
+          patterns: 
+          [
+            {
+              subject: { variable: "subject" },
+              predicate: { variable: "predicate" },
+              object: { variable: "object" }
+            }
+          ]
+        }
+      }
+    }
+  }
+}')
+
+$AXONED_PATH query wasm contract-state smart $COGNITARIUM_ADDR "$QUERY" --node $AXONE_NODE_RPC --output json | jq
+
+```
+
+### Get MinIO Gov Address
+
+```bash
+# ------------------------------
+# GET MINIO GOV CREDENTIAL FROM MINIO DID
+# ------------------------------
+
+QUERY=$(jq -n --arg did "$MINIO_DID" '{
   select: {
     query: {
       prefixes: [],
       select: [
         { variable: "credential" },
-        { variable: "predicate" },
-        { variable: "object" }
+        { variable: "p" },
+        { variable: "o" },
+        { variable: "date" } 
       ],
-      where: {
-        bgp: {
-          patterns: [
-            {
-              subject: { variable: "credential" },
-              predicate: { variable: "predicate" },
-              object: { variable: "object" }
-            },
-            {
-              subject: { variable: "credential" },
-              predicate: { named_node: { full: "dataverse:credential:body#subject" } },
-              object: { node: { named_node: { full: $minioDid } } }
-            }
-          ]
-        }
-      }
-    }
-  }
-}')
-
-# Ejecutar la consulta
-$AXONED_PATH query wasm contract-state smart $COGNITARIUM_ADDR "$QUERY" \
-  --node $AXONE_NODE_RPC --output json | jq '.data.results.bindings'
-
-
-
-
-
-
-
-
-
-export QUERY=$(jq -n --arg minioDid "$MINIO_DID" '{
-  select: {
-    query: {
-      prefixes: [],
-      select: [{ variable: "zoneDid" }],
-      where: {
-        bgp: {
-          patterns: [
-            {
-              subject: { variable: "credential" },
-              predicate: { named_node: { full: "dataverse:credential:body#subject" } },
-              object: { node: { named_node: { full: $minioDid } } }
-            },
-            {
-              subject: { variable: "credential" },
-              predicate: { named_node: { full: "dataverse:credential:body#type" } },
-              object: { node: { named_node: { full: "https://w3id.org/axone/ontology/$ONTOLOGY_NEXT_VERSION/schema/credential/zone/membership/ZoneMembershipCredential" } } }
-            },
-            {
-              subject: { variable: "credential" },
-              predicate: { named_node: { full: "dataverse:credential:body#claim" } },
-              object: { variable: "claim" }
-            },
-            {
-              subject: { variable: "claim" },
-              predicate: { named_node: { full: "https://w3id.org/axone/ontology/$ONTOLOGY_NEXT_VERSION/schema/credential/zone/membership/inZone" } },
-              object: { variable: "zoneDid" }
-            }
-          ]
-        }
-      }
-    }
-  }
-}')
-
-# Execute the query
-$AXONED_PATH query wasm contract-state smart $COGNITARIUM_ADDR "$QUERY" --node $AXONE_NODE_RPC --output json | jq -r '.data.results.bindings[0].zoneDid.value.full'
-
-
-# GET ZONE DID FROM MINIO DID
-
-export QUERY=$(jq -n --arg minioDid "$MINIO_DID" '{
-  select: {
-    query: {
-      prefixes: [],
-      select: [{ variable: "zoneDid" }],
       where: {
         lateral_join: {
           left: {
@@ -574,7 +675,73 @@ export QUERY=$(jq -n --arg minioDid "$MINIO_DID" '{
                 {
                   subject: { variable: "credential" },
                   predicate: { named_node: { full: "dataverse:credential:body#subject" } },
-                  object: { node: { named_node: { full: $minioDid } } }
+                  object: { node: { named_node: { full: $did } } }
+                },
+                {
+                  subject: { variable: "credential" },
+                  predicate: { named_node: { full: "dataverse:credential:body#type" } },
+                  object: { node: { named_node: { full: "https://w3id.org/axone/ontology/v4/schema/credential/governance/text/GovernanceTextCredential" } } }
+                },
+                {
+                  subject: { variable: "credential" },
+                  predicate: { variable: "dataverse:credential:body#claim" },
+                  object: { variable: "claim" }
+                },
+                {
+                  subject: { variable: "claim" },
+                  predicate: { named_node: { full: "https://w3id.org/axone/ontology/v4/schema/credential/governance/text/isGovernedBy" } },
+                  object: { variable: "governance" }
+                },
+                {
+                  subject: { variable: "credential" },
+                  predicate: { named_node: { full: "dataverse:credential:body#validFrom" } },
+                  object: { variable: "date" } 
+                }
+              ]
+            }
+          },
+          right: {
+            bgp: {
+              patterns: [
+                {
+                  subject: { variable: "governance" },
+                  predicate: { variable: "p" },
+                  object: { variable: "o" }
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}')
+
+$AXONED_PATH query wasm contract-state smart $COGNITARIUM_ADDR "$QUERY" --node $AXONE_NODE_RPC --output json | jq
+```
+
+### Get Zone DID from MinIO Service DID using Zone Membership Credential
+
+This query retrieves the Zone DID associated with a given service (MinIO) DID based on the Zone Membership Credential.
+
+```bash
+
+# GET ZONE DID FROM MINIO DID
+
+export QUERY=$(jq -n --arg minioDID "$MINIO_DID" '{
+  select: {
+    query: {
+      prefixes: [],
+      select: [{ variable: "zoneDID" }],
+      where: {
+        lateral_join: {
+          left: {
+            bgp: {
+              patterns: [
+                {
+                  subject: { variable: "credential" },
+                  predicate: { named_node: { full: "dataverse:credential:body#subject" } },
+                  object: { node: { named_node: { full: $minioDID } } }
                 },
                 {
                   subject: { variable: "credential" },
@@ -595,7 +762,7 @@ export QUERY=$(jq -n --arg minioDid "$MINIO_DID" '{
                 {
                   subject: { variable: "claim" },
                   predicate: { named_node: { full: "https://w3id.org/axone/ontology/vnext/schema/credential/zone/membership/inZone" } },
-                  object: { variable: "zoneDid" }
+                  object: { variable: "zoneDID" }
                 }
               ]
             }
