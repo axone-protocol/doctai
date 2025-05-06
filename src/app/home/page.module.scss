@@ -1,0 +1,38 @@
+.homeContainer {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.card {
+    background-color: var(--color-bg-alt);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    padding: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+.cardIcon {
+    font-size: 2rem;
+    color: var(--color-accent);
+}
+
+.cardContent {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.cardTitle {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin: 0;
+}
+
+.cardText {
+    margin: 0;
+    color: var(--color-text);
+}

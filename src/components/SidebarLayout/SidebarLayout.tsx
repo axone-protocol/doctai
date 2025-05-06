@@ -44,7 +44,6 @@ export default function SidebarLayout({
     const guestLinks = [
         { href: ROUTES.CHAT, label: "Chat with DoctAI" },
         { href: ROUTES.CHAT_HISTORY, label: "Chats History" },
-        { href: ROUTES.UPLOAD, label: "Upload Dataset" },
         { href: ROUTES.PAYMENTS, label: "Payment History" },
         { href: ROUTES.GOVERNANCE, label: "Governance" },
         { href: ROUTES.ZONE, label: "Zone" },

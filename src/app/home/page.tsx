@@ -1,44 +1,49 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Smile } from "lucide-react";
 import { useUserStore } from "@/store/useUserStore";
-import {
-    HEARTH_LABS_ZONE_DID,
-    MINIO_DID,
-    HEARTH_LABS_ZONES_GOV_ADDRESS,
-} from "@/lib/constants";
-import { fetchZoneGovAddress } from "@/lib/keplr/utils";
+import { fetchWalletBalance } from "@/lib/cosmos/frontend/keplr";
+import styles from "./page.module.scss";
 
 export default function HomePage() {
     const { address, userType } = useUserStore();
-
-    const [zoneGovAddress, setZoneGovAddress] = useState<string>("loading...");
-    const [loading, setLoading] = useState<boolean>(true);
+    const [balance, setBalance] = useState<number | null>(null);
 
     useEffect(() => {
-        async function loadZoneGovernance() {
-            try {
-                const address = await fetchZoneGovAddress(HEARTH_LABS_ZONE_DID);
-                setZoneGovAddress(address);
-            } catch (error) {
-                console.error("Failed to fetch zone governance address:", error);
-                setZoneGovAddress("error");
-            } finally {
-                setLoading(false);
+        const loadBalance = async () => {
+            if (address) {
+                const result = await fetchWalletBalance(address);
+                setBalance(result);
             }
-        }
-
-        loadZoneGovernance();
-    }, []);
+        };
+        loadBalance();
+    }, [address]);
 
     return (
-        <>
-            <h1>Welcome to DoctAI</h1>
-            <p>Wallet: {address}</p>
-            <p>User type: {userType}</p>
-            <p>Zone DID: {HEARTH_LABS_ZONE_DID}</p>
-            <p>Minio DID: {MINIO_DID}</p>
-            <p>Zone Gov Address: {loading ? "loading..." : zoneGovAddress}</p>
-        </>
+        <div className={styles.homeContainer}>
+            <div className={styles.card}>
+                <div className={styles.cardIcon}>
+                    <Smile />
+                </div>
+                <div className={styles.cardContent}>
+                    <h2 className={styles.cardTitle}>Welcome to DoctAI!</h2>
+                    <p className={styles.cardText}>
+                        We&apos;re glad to have you here. Your connected wallet:
+                        <br />
+                        <strong>{address}</strong>
+                    </p>
+                    <p className={styles.cardText}>
+                        User type: <strong>{userType}</strong>
+                    </p>
+                    {balance !== null && (
+                        <p className={styles.cardText}>
+                            Wallet balance:{" "}
+                            <strong>{balance.toFixed(6)} AXONE</strong>
+                        </p>
+                    )}
+                </div>
+            </div>
+        </div>
     );
 }
