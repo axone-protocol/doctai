@@ -9,6 +9,7 @@ export const ChatHandler: BaseEntityServer<Chat> = {
         id: chat.id,
         title: chat.title,
         userId: chat.userId,
+        datasetUrl: chat.datasetUrl,
         createdAt: chat.createdAt.toISOString(),
         updatedAt: chat.updatedAt.toISOString(),
     }),
@@ -18,6 +19,7 @@ export const ChatHandler: BaseEntityServer<Chat> = {
         chat.id = dto.id;
         chat.title = dto.title;
         chat.userId = dto.userId;
+        chat.datasetUrl = dto.datasetUrl;
         // chat.createdAt = new Date(dto.createdAt);
         // chat.updatedAt = new Date(dto.updatedAt);
         return chat;

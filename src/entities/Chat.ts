@@ -28,6 +28,9 @@ export class Chat {
     @Column()
     userId!: string;
 
+    @Column({ nullable: true })
+    datasetUrl?: string;
+
     @OneToMany("ChatMessage", "chat", { cascade: true })
     chatMessages!: ChatMessage[];
 
