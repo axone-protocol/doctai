@@ -8,41 +8,19 @@ import {
     CosmWasmClient,
     SigningCosmWasmClient,
 } from "@cosmjs/cosmwasm-stargate";
-import {
-    Bip39,
-    EnglishMnemonic,
-    Random,
-    Secp256k1,
-    Slip10,
-    Slip10Curve,
-    stringToPath,
-} from "@cosmjs/crypto";
 import { DirectSecp256k1HdWallet } from "@cosmjs/proto-signing";
 import { GasPrice } from "@cosmjs/stargate";
-import { hmac } from "@noble/hashes/hmac";
-import { sha256 } from "@noble/hashes/sha256";
-import { concatBytes } from "@noble/hashes/utils";
-import { etc, sign } from "@noble/secp256k1";
 import {
     fetchGovAddressFromDID,
     fetchZoneDIDFromMinIODID,
 } from "../frontend/axone";
-import { getDocumentLoader } from "./normalizeJsonLd";
-import { schemaMap } from "./schemas/schemaMap";
-import { entropyToMnemonic } from "@cosmjs/crypto/build/bip39";
-import { base58btc } from "multiformats/bases/base58";
-
-import { writeFile, readFile, unlink } from "fs/promises";
-import { exec } from "child_process";
-import { tmpdir } from "os";
-import { join } from "path";
-import { promisify } from "util";
-
-import jsonld from "jsonld";
-import { canonize } from "rdf-canonize";
-import { ec as EC } from "elliptic";
-
-const execAsync = promisify(exec);
+import {
+    formatFileSize,
+    generateRandomDidKey,
+    signCredentialWithJwk,
+    signCredentialWithNoble,
+} from "./utils";
+import { convertToNQuads } from "./utils-jsonld-nquads";
 
 /**
  * Checks if a user is a contributor by querying the zone governance contract
@@ -303,48 +281,11 @@ export async function checkPaymentMock(txHash: string): Promise<boolean> {
 }
 
 /**
- * Generates a valid random did:key using HD derivation with secp256k1
- * @returns {Promise<string>} A valid DID like `did:key:zQ3...`
- */
-export async function generateRandomDidKey(): Promise<string> {
-    // 1. Generate random mnemonic
-    const mnemonic = entropyToMnemonic(Random.getBytes(16)); // Generates a 12-word mnemonic by default
-
-    // 2. Derive seed and private key
-    const hdPath = stringToPath("m/44'/118'/0'/0/0");
-    const seed = await Bip39.mnemonicToSeed(new EnglishMnemonic(mnemonic));
-    const { privkey } = Slip10.derivePath(Slip10Curve.Secp256k1, seed, hdPath);
-
-    if (!privkey) throw new Error("Failed to derive private key");
-
-    // 3. Get compressed public key
-    const uncompressed = (await Secp256k1.makeKeypair(privkey)).pubkey;
-    const pubkey = Secp256k1.compressPubkey(uncompressed); // ✅ compressed = 33 bytes
-
-    // 4. Add multicodec prefix 0xE7 (secp256k1-pub) and encode
-    const multicodecPrefix = Uint8Array.from([0xe7]);
-    const prefixedKey = concatBytes(multicodecPrefix, pubkey);
-    const encoded = base58btc.encode(prefixedKey); // starts with z...
-
-    // 5. Build DID
-    return `did:key:${encoded}`;
-}
-
-export async function getRawPrivkeyFromMnemonic(
-    mnemonic: string
-): Promise<Uint8Array> {
-    const hdPath = stringToPath("m/44'/118'/0'/0/0");
-    const seed = await Bip39.mnemonicToSeed(new EnglishMnemonic(mnemonic));
-    const { privkey } = Slip10.derivePath(Slip10Curve.Secp256k1, seed, hdPath);
-    return privkey;
-}
-
-/**
  * Main function to create and publish a credential for a dataset
  * @param file File uploaded by the user
  * @returns Transaction hash on the blockchain
  */
-export async function createAndPublishCredential(file: File): Promise<string> {
+export async function createAndPublishCredential(file: File): Promise<{datasetDID: string, txHash: string}> {
     try {
         console.log(
             `[createAndPublishCredential] Starting for file: ${file.name}`
@@ -402,16 +343,7 @@ export async function createAndPublishCredential(file: File): Promise<string> {
 
         // Sign the credential
         console.log(`[createAndPublishCredential] Signing credential`);
-        const signedCredential = await signCredential(credential, wallet);
-        console.log(
-            `[createAndPublishCredential] Credential signed, proof: ${JSON.stringify(
-                signedCredential.proof
-            )}`
-        );
-
-        // Sign the credential
-        console.log(`[createAndPublishCredential] Signing credential2`);
-        const signedCredential = await signCredential2(credential, wallet);
+        const signedCredential = await signCredentialWithJwk(credential, MINIO_WALLET_MNEMONIC_PHRASE);
         console.log(
             `[createAndPublishCredential] Credential signed, proof: ${JSON.stringify(
                 signedCredential.proof
@@ -425,14 +357,6 @@ export async function createAndPublishCredential(file: File): Promise<string> {
             `[createAndPublishCredential] N-Quads generated: ${nquads}`
         );
 
-        // const signedCredentialnQuads = await signCredentialViaCLI(
-        //     credential,
-        //     issuerName
-        // );
-        // console.log(
-        //     `[createAndPublishCredential] N-Quads generated ALTERNATIVE: ${signedCredentialnQuads}`
-        // );
-
         // Publish to the blockchain
         console.log(`[createAndPublishCredential] Publishing to blockchain`);
         const txHash = await publishCredentialToChain(nquads, wallet);
@@ -440,7 +364,7 @@ export async function createAndPublishCredential(file: File): Promise<string> {
             `[createAndPublishCredential] Published successfully, txHash: ${txHash}`
         );
 
-        return txHash;
+        return {datasetDID, txHash};
     } catch (error) {
         console.error("[createAndPublishCredential] Error:", error);
         throw error;
@@ -546,346 +470,6 @@ export function generateDatasetCredential({
 }
 
 /**
- * Signs a credential using the axoned CLI + jsonld CLI
- * @param credential The JSON-LD credential to sign
- * @param issuer_wallet_name The name of the issuer wallet
- * @returns Signed credential in N-Quads format
- */
-export async function signCredentialViaCLI(
-    credential: any,
-    issuer_wallet_name: string
-): Promise<string> {
-    const tmpJsonld = join(tmpdir(), `credential-${Date.now()}.jsonld`);
-    const tmpNquads = join(tmpdir(), `credential-${Date.now()}.nq`);
-
-    const AXONED_PATH =
-        process.env.AXONED_PATH ||
-        "/home/manuelpadilla/sources/reposUbuntu/AXONE/tools/axoned-10.0.0-linux-amd64/axoned";
-    const KEYRING_BACKEND =
-        process.env.KEYRING_BACKEND || "--keyring-backend os";
-    try {
-        // Save credential to temp file
-        await writeFile(tmpJsonld, JSON.stringify(credential, null, 2));
-        console.log(`[signCredentialViaCLI] Wrote credential to: ${tmpJsonld}`);
-
-        // Build the command
-        const cmd = `${AXONED_PATH} credential sign ${tmpJsonld} ${KEYRING_BACKEND} --from ${issuer_wallet_name} | jsonld toRdf -q - > ${tmpNquads}`;
-        console.log(`[signCredentialViaCLI] Running command:\n${cmd}`);
-
-        // Run command via shell
-        //await execAsync(cmd, { shell: "/bin/bash" });
-        console.log(
-            `[signCredentialViaCLI] Signature completed, reading N-Quads...`
-        );
-
-        // Read resulting N-Quads
-        const nquads = await readFile(tmpNquads, "utf-8");
-        console.log(`[signCredentialViaCLI] Read ${nquads.length} bytes`);
-
-        return nquads;
-    } catch (err) {
-        console.error(`[signCredentialViaCLI] Error during CLI signing:`, err);
-        throw new Error("Credential signing via CLI failed");
-    } finally {
-        // Clean up
-        // await unlink(tmpJsonld).catch(() => {});
-        // await unlink(tmpNquads).catch(() => {});
-    }
-}
-
-/**
- * Signs a credential using the wallet and rdf-canonize for URDNA2015 normalization
- * @param credential Credential to sign
- * @param wallet Wallet with the private key
- * @returns Signed credential with proof
- */
-export async function signCredential2(
-    credential: any,
-    wallet: DirectSecp256k1HdWallet
-): Promise<any> {
-    try {
-        console.log(`[signCredential] Init`);
-
-        const [account] = await wallet.getAccounts();
-        console.log(`[signCredential] Using account: ${account.address}`);
-
-        const documentToSign = { ...credential };
-        delete documentToSign.proof;
-
-        const privKey = await getRawPrivkeyFromMnemonic(
-            MINIO_WALLET_MNEMONIC_PHRASE
-        );
-
-
-        // Convert to N-Quads (TS)
-        const nquads = await jsonld.toRDF(documentToSign, {
-            format: "application/n-quads",
-            documentLoader: getDocumentLoader(schemaMap),
-        });
-
-        // Canonicalize with rdf-canonize (TS)
-        const canonicalized = await canonize(nquads, {
-            algorithm: "URDNA2015",
-            inputFormat: "application/n-quads",
-        });
-
-        const messageHash = sha256(new TextEncoder().encode(canonicalized));
-
-        const ec = new EC("secp256k1");
-
-        function bigIntTo32Bytes(bn: any): Uint8Array {
-            const hex = bn.toString(16).padStart(64, "0");
-            return Uint8Array.from(
-                hex.match(/.{2}/g)!.map((byte: string) => parseInt(byte, 16))
-            );
-        }
-
-        function signCompactECDSA(
-            hash: Uint8Array,
-            privKey: Uint8Array
-        ): Uint8Array {
-            const key = ec.keyFromPrivate(privKey);
-            const sig = key.sign(hash, { canonical: true });
-
-            const r = bigIntTo32Bytes(sig.r);
-            const s = bigIntTo32Bytes(sig.s);
-            return new Uint8Array([...r, ...s]); // compact 64-byte signature
-        }
-
-        const signature = signCompactECDSA(messageHash, privKey);
-        const signatureBase64 = Buffer.from(signature).toString("base64url");
-
-        // const key = ec.keyFromPrivate(privKey);
-        // const signature = key.sign(messageHash);
-
-        // // Get DER-encoded signature
-        // const derSig = signature.toDER();
-        // const signatureBase64 = Buffer.from(derSig).toString("base64url");
-
-        const header = {
-            alg: "unknown",
-            b64: false,
-            crit: ["b64"],
-        };
-        const encodedHeader = Buffer.from(JSON.stringify(header)).toString(
-            "base64url"
-        );
-       
-        const jws = `${encodedHeader}..${signatureBase64}`;
-
-        const didKeyParts = credential.issuer.id.split(":");
-        const keyFragment = didKeyParts[didKeyParts.length - 1];
-        const verificationMethod = `${credential.issuer.id}#${keyFragment}`;
-
-        const now = new Date();
-        const tzOffset = now.getTimezoneOffset() * -1;
-        const tzHours = String(Math.floor(Math.abs(tzOffset) / 60)).padStart(
-            2,
-            "0"
-        );
-        const tzMinutes = String(Math.abs(tzOffset) % 60).padStart(2, "0");
-        const tzSign = tzOffset >= 0 ? "+" : "-";
-        const microseconds =
-            String(now.getMilliseconds()).padStart(3, "0") + "000";
-        const timestamp = `${now
-            .toISOString()
-            .replace("Z", "")
-            .substring(0, 19)}.${microseconds}${tzSign}${tzHours}:${tzMinutes}`;
-
-        const proof = {
-            type: "EcdsaSecp256k1Signature2019",
-            created: timestamp,
-            proofPurpose: "assertionMethod",
-            verificationMethod,
-            jws,
-        };
-
-        return {
-            ...credential,
-            proof,
-        };
-    } catch (error) {
-        console.error(`[signCredential] Error:`, error);
-        throw new Error(
-            `Failed to sign credential: ${
-                error instanceof Error ? error.message : String(error)
-            }`
-        );
-    }
-}
-
-/**
- * Signs a credential using the wallet
- * This function creates a proper JWS signature according to the Axone protocol requirements
- * @param credential Credential to sign
- * @param wallet Wallet with the private key
- * @returns Signed credential
- */
-export async function signCredential(
-    credential: any,
-    wallet: DirectSecp256k1HdWallet
-): Promise<any> {
-    try {
-        console.log(`[signCredential] Init`);
-
-        // Extract account from wallet
-        const [account] = await wallet.getAccounts();
-        console.log(`[signCredential] Using account: ${account.address}`);
-
-        // Clone the credential object and remove any existing proof
-        const documentToSign = { ...credential };
-        delete documentToSign.proof;
-        console.log(
-            `[signCredential] Prepared document for signing: ${JSON.stringify(
-                documentToSign
-            )}`
-        );
-
-        // Get the private key
-        const privKey = await getRawPrivkeyFromMnemonic(
-            MINIO_WALLET_MNEMONIC_PHRASE
-        );
-
-        // Convert the document to JSON-LD Normalized form (canonicalization)
-        // First convert to n-quads format
-        console.log(
-            `[signCredential] Converting to N-Quads for canonicalization`
-        );
-        let canonicalizedData;
-        try {
-            // Use a more complete JSON-LD library if available
-            // This is a simplification - ideally use something compatible with Hyperledger Aries
-            canonicalizedData = await jsonld.normalize(documentToSign, {
-                algorithm: "URDNA2015",
-                format: "application/n-quads",
-                documentLoader: getDocumentLoader(schemaMap),
-            });
-            console.log(
-                `[signCredential] Successfully canonicalized document: ${canonicalizedData}`
-            );
-        } catch (error) {
-            throw new Error(
-                `[signCredential] Error during canonicalization: ${error}`
-            );
-        }
-
-        // Hash the canonicalized document using SHA-256
-        const messageHash = sha256(new TextEncoder().encode(canonicalizedData));
-        console.log(
-            `[signCredential] Document hashed (${messageHash.length} bytes)`
-        );
-
-        // Sign the hash
-        etc.hmacSha256Sync = (key, msgs) => hmac(sha256, key, msgs); // required by noble
-        const signatureBytes = await sign(messageHash, privKey, {
-            lowS: true,
-            extraEntropy: true,
-        }).toCompactRawBytes();
-
-        // Create JWS header and detached signature in the format Axone expects
-        const header = {
-            alg: "unknown",
-            b64: false,
-            crit: ["b64"],
-        };
-        const encodedHeader = Buffer.from(JSON.stringify(header)).toString(
-            "base64url"
-        );
-        const signatureBase64 =
-            Buffer.from(signatureBytes).toString("base64url");
-        const jws = `${encodedHeader}..${signatureBase64}`;
-
-        console.log(
-            `[signCredential] Detached JWS created: ${jws.substring(0, 20)}...`
-        );
-
-        // Build the DID verification method
-        const didKeyParts = credential.issuer.id.split(":");
-        const keyFragment = didKeyParts[didKeyParts.length - 1];
-        const verificationMethod = `${credential.issuer.id}#${keyFragment}`;
-
-        console.log(
-            `[signCredential] Verification method: ${verificationMethod}`
-        );
-
-        // Format timestamp to match CLI output (RFC3339 format)
-        // The CLI uses the local timezone offset instead of 'Z'
-        // Format the timestamp similar to the CLI output
-        // CLI format includes microseconds and timezone offset
-        const now = new Date();
-        const tzOffset = now.getTimezoneOffset() * -1;
-        const tzHours = String(Math.floor(Math.abs(tzOffset) / 60)).padStart(
-            2,
-            "0"
-        );
-        const tzMinutes = String(Math.abs(tzOffset) % 60).padStart(2, "0");
-        const tzSign = tzOffset >= 0 ? "+" : "-";
-
-        // Format with microseconds precision (pad with zeros if needed)
-        const microseconds =
-            String(now.getMilliseconds()).padStart(3, "0") + "000";
-
-        // Format the timestamp in the specific format the CLI uses
-        const timestamp = `${now
-            .toISOString()
-            .replace("Z", "")
-            .substring(0, 19)}.${microseconds}${tzSign}${tzHours}:${tzMinutes}`;
-
-        // Create the proof object in the exact format expected by Axone
-        const proof = {
-            type: "EcdsaSecp256k1Signature2019",
-            created: timestamp,
-            proofPurpose: "assertionMethod",
-            verificationMethod: verificationMethod,
-            jws: jws,
-        };
-
-        console.log(`[signCredential] Proof built: ${JSON.stringify(proof)}`);
-
-        // Return the signed credential
-        return {
-            ...credential,
-            proof,
-        };
-    } catch (error) {
-        console.error(`[signCredential] Error:`, error);
-        throw new Error(
-            `Failed to sign credential: ${
-                error instanceof Error ? error.message : String(error)
-            }`
-        );
-    }
-}
-
-/**
- * Converts a credential to N-Quads format
- * @param credential Credential to convert
- * @returns N-Quads representation of the credential
- */
-async function convertToNQuads(credential: any): Promise<string> {
-    try {
-        console.log(
-            `[convertToNQuads] Converting credential to N-Quads format`
-        );
-
-        const result = await jsonld.toRDF(credential, {
-            format: "application/n-quads",
-        });
-
-        const resultStr =
-            typeof result === "string" ? result : result.toString();
-        console.log(
-            `[convertToNQuads] Conversion successful, N-Quads length: ${resultStr.length}`
-        );
-
-        return resultStr;
-    } catch (error) {
-        console.error("[convertToNQuads] Error converting to N-Quads:", error);
-        throw new Error("Failed to convert credential to N-Quads format");
-    }
-}
-
-/**
  * Publishes a credential to the Axone blockchain
  * @param nquads Credential in N-Quads format
  * @param wallet Issuer's wallet
@@ -960,17 +544,4 @@ async function publishCredentialToChain(
             }`
         );
     }
-}
-
-/**
- * Formats a file size for display
- * @param bytes Size in bytes
- * @returns Human-readable size representation
- */
-function formatFileSize(bytes: number): string {
-    if (bytes < 1024) return bytes + " bytes";
-    else if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + " KB";
-    else if (bytes < 1024 * 1024 * 1024)
-        return (bytes / (1024 * 1024)).toFixed(2) + " MB";
-    else return (bytes / (1024 * 1024 * 1024)).toFixed(2) + " GB";
 }

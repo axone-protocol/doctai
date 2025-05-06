@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useUserStore } from "@/store/useUserStore";
@@ -7,6 +8,8 @@ import { Chat } from "@/entities/Chat";
 import { ChatMessage } from "@/entities/ChatMessage";
 import { getRelationKey } from "@/lib/relations";
 import styles from "./page.module.scss";
+import { fetchFullCredentialByDID } from "@/lib/cosmos/frontend/axone";
+import { Loader } from "lucide-react";
 
 interface Message {
     id: string;
@@ -21,12 +24,17 @@ export default function ChatInteractPage() {
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState("");
     const [loading, setLoading] = useState(false);
-    const [datasetUrl, setDatasetUrl] = useState<string | null>(null);
+    const [isLoadingInfo, setIsLoadingInfo] = useState(true);
+    const [chat, setChat] = useState<Chat | null>(null);
+    const [datasetCredential, setDatasetCredential] = useState<Record<
+        string,
+        any
+    > | null>(null);
 
     useEffect(() => {
         if (!chatId) return;
 
-        const loadMessages = async () => {
+        const loadAll = async () => {
             try {
                 const msgs = await fetchEntityRelation<ChatMessage>(
                     Chat.name,
@@ -38,26 +46,34 @@ export default function ChatInteractPage() {
                     id: msg.id,
                     role: msg.role,
                     content: msg.content,
-                    createdAt: msg.createdAt.toLocaleString(),
+                    createdAt: msg.createdAt?.toLocaleString(),
                 }));
 
                 setMessages(formatted);
+
+                const chat = await fetchEntityById<Chat>(
+                    Chat.name,
+                    chatId as string
+                );
+                setChat(chat);
+
+                if (chat.datasetDID) {
+                    const cred = await fetchFullCredentialByDID(
+                        chat.datasetDID
+                    );
+                    setDatasetCredential(cred);
+                }
             } catch (error) {
-                console.error("Failed to fetch chat messages:", error);
+                console.error(
+                    "Failed to fetch chat or dataset credential:",
+                    error
+                );
+            } finally {
+                setIsLoadingInfo(false);
             }
         };
 
-        const loadChatInfo = async () => {
-            try {
-                const chat = await fetchEntityById<Chat>(Chat.name, chatId as string);
-                setDatasetUrl(chat.datasetUrl || null);
-            } catch (error) {
-                console.error("Failed to fetch chat info:", error);
-            }
-        };
-
-        loadMessages();
-        loadChatInfo();
+        loadAll();
     }, [chatId]);
 
     const sendMessage = async () => {
@@ -96,13 +112,52 @@ export default function ChatInteractPage() {
         <div className={styles.chatContainer}>
             <h1>Chat with DoctAI</h1>
 
-            {datasetUrl && (
-                <div className={styles.datasetInfo}>
-                    <strong>Dataset:</strong>{" "}
-                    <a href={datasetUrl} target="_blank" rel="noopener noreferrer">
-                        {datasetUrl}
-                    </a>
+            {isLoadingInfo ? (
+                <div className={styles.loading}>
+                    <div className={styles.topRow}>
+                        <span className={styles.icon}>
+                            <Loader />
+                        </span>
+                        <span className={styles.dots}>
+                            <span>.</span>
+                            <span>.</span>
+                            <span>.</span>
+                        </span>
+                    </div>
+                    <p className={styles.loadingText}>
+                        Loading Detaset Data...
+                    </p>
                 </div>
+            ) : (
+                <>
+                    {chat?.datasetUrl && (
+                        <div className={styles.datasetInfo}>
+                            <strong>Dataset URL:</strong>{" "}
+                            <a
+                                href={chat.datasetUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                {chat.datasetUrl}
+                            </a>
+                        </div>
+                    )}
+
+                    {chat?.datasetDID && (
+                        <div className={styles.datasetInfo}>
+                            <strong>Dataset DID:</strong> {chat.datasetDID}
+                        </div>
+                    )}
+
+                    {datasetCredential && (
+                        <div className={styles.credentialBlock}>
+                            <strong>Dataset Credential</strong>
+                            <pre>
+                                {JSON.stringify(datasetCredential, null, 2)}
+                            </pre>
+                        </div>
+                    )}
+                </>
             )}
 
             <div className={styles.messages}>
@@ -113,7 +168,9 @@ export default function ChatInteractPage() {
                             msg.role === "user" ? styles.user : styles.assistant
                         }`}
                     >
-                        <strong>{msg.role === "user" ? "You" : "DoctAI"}</strong>
+                        <strong>
+                            {msg.role === "user" ? "You" : "DoctAI"}
+                        </strong>
                         {msg.content}
                     </div>
                 ))}
