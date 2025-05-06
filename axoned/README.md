@@ -6,7 +6,13 @@
 - [README](#readme)
   - [Table of Contents](#table-of-contents)
   - [Set Env](#set-env)
-  - [Set Smart Contracts](#set-smart-contracts)
+  - [Set Up Issuer Wallet](#set-up-issuer-wallet)
+    - [Create Issuer Wallet](#create-issuer-wallet)
+    - [Get AXONE Tokens](#get-axone-tokens)
+    - [Check Issuer Wallet Balance](#check-issuer-wallet-balance)
+    - [Get Account Number and Sequence](#get-account-number-and-sequence)
+    - [Verify Generated DIDs](#verify-generated-dids)
+  - [Set Up Smart Contracts](#set-up-smart-contracts)
     - [Objectarium](#objectarium)
     - [Dataverse](#dataverse)
   - [Create Hearth Labs Zone Description](#create-hearth-labs-zone-description)
@@ -100,36 +106,6 @@ export CODE_ID_OBJECTARIUM=1
 # Keyring backend setting
 export KEYRING_BACKEND="--keyring-backend os"
 
-# Create DoctAi Issuer Wallet
-
-export ISSUER_WALLET=doctai-issuer-wallet
-
-$AXONED_PATH keys add $ISSUER_WALLET $KEYRING_BACKEND
-
-- address: axone1l3tjnxllfmy4p3082vd388jp8j9m72ypeynm9y
-  name: doctai-issuer-wallet
-  pubkey: '{"@type":"/cosmos.crypto.secp256k1.PubKey","key":"AgmNFhZ4l9qJ9y0sHnV7QqOa2GxJZAFevkFDSJOzp+2i"}'
-  type: local
-
-**Important** write this mnemonic phrase in a safe place.
-It is the only way to recover your account if you ever forget your password.
-
-domain rebel sad submit episode equal salad crystal dog example mutual enough onion one summer flat wealth huge pet loyal dance canyon siege stomach
-
-# DoctAi Issuer Wallet configuration 
-
-export ISSUER_ADDRESS=$($AXONED_PATH keys show $ISSUER_WALLET -a $KEYRING_BACKEND)
-export ISSUER_DID=$($AXONED_PATH keys show $ISSUER_WALLET -k $KEYRING_BACKEND)
-
-# Faucet
-
-# Request funds with AXONE chain address
-# https://faucet.axone.xyz/
-
-# Account details for transactions
-export ISSUER_ACCOUNT_NUMBER=$($AXONED_PATH query auth account $ISSUER_ADDRESS --node $AXONE_NODE_RPC -o json | jq -r '.account.value.account_number')
-export ISSUER_SEQUENCE=$($AXONED_PATH query auth account $ISSUER_ADDRESS --node $AXONE_NODE_RPC -o json | jq -r '.account.value.sequence')
-
 # Logs
 echo "" 
 echo "" >> $LOG_PATH/implementation.log
@@ -168,6 +144,34 @@ echo "CODE_ID_LAW_STONE=\"$CODE_ID_LAW_STONE\""
 echo "CODE_ID_LAW_STONE=\"$CODE_ID_LAW_STONE\"" >> $LOG_PATH/implementation.log
 echo "CODE_ID_OBJECTARIUM=\"$CODE_ID_OBJECTARIUM\""
 echo "CODE_ID_OBJECTARIUM=\"$CODE_ID_OBJECTARIUM\"" >> $LOG_PATH/implementation.log
+```
+
+## Set Up Issuer Wallet
+
+### Create Issuer Wallet
+
+```bash
+
+# Create DoctAi Issuer Wallet
+
+export ISSUER_WALLET=doctai-issuer-wallet
+
+$AXONED_PATH keys add $ISSUER_WALLET $KEYRING_BACKEND
+
+- address: axone1l3tjnxllfmy4p3082vd388jp8j9m72ypeynm9y
+  name: doctai-issuer-wallet
+  pubkey: '{"@type":"/cosmos.crypto.secp256k1.PubKey","key":"AgmNFhZ4l9qJ9y0sHnV7QqOa2GxJZAFevkFDSJOzp+2i"}'
+  type: local
+
+**Important** write this mnemonic phrase in a safe place.
+It is the only way to recover your account if you ever forget your password.
+
+domain rebel sad submit episode equal salad crystal dog example mutual enough onion one summer flat wealth huge pet loyal dance canyon siege stomach
+
+# DoctAi Issuer Wallet configuration 
+
+export ISSUER_ADDRESS=$($AXONED_PATH keys show $ISSUER_WALLET -a $KEYRING_BACKEND)
+export ISSUER_DID=$($AXONED_PATH keys show $ISSUER_WALLET -k $KEYRING_BACKEND)
 
 echo "ISSUER_WALLET=\"$ISSUER_WALLET\""
 echo "ISSUER_WALLET=\"$ISSUER_WALLET\"" >> $LOG_PATH/implementation.log
@@ -175,13 +179,72 @@ echo "ISSUER_ADDRESS=\"$ISSUER_ADDRESS\""
 echo "ISSUER_ADDRESS=\"$ISSUER_ADDRESS\"" >> $LOG_PATH/implementation.log
 echo "ISSUER_DID=\"$ISSUER_DID\""
 echo "ISSUER_DID=\"$ISSUER_DID\"" >> $LOG_PATH/implementation.log
+```
+
+### Get AXONE Tokens
+
+Make sure it has balance.
+
+Follow:  
+
+<https://docs.axone.xyz/tutorials/keplr-1>  
+
+Faucet (Request funds with AXONE chain address):  
+
+<https://faucet.axone.xyz/>
+
+### Check Issuer Wallet Balance
+
+```bash
+$AXONED_PATH query bank balances $ISSUER_ADDRESS --node $AXONE_NODE_RPC
+```
+
+```bash
+balances:
+- amount: "2929782"
+  denom: uaxone
+pagination:
+  total: "1"
+```
+
+```bash
+$AXONED_PATH query auth account $ISSUER_ADDRESS --node $AXONE_NODE_RPC
+```
+
+```bash
+account:
+  type: cosmos-sdk/BaseAccount
+  value:
+    account_number: "2343"
+    address: axone1zyef5q2fqx9rgsnyfwc3w9ukfeyltl4hnn2ydg
+    public_key:
+      type: tendermint/PubKeySecp256k1
+      value: AqjA9phopOiUuNgHsnMvoRYE8jZxcE0ozrWoNryEo2x5
+    sequence: "1"
+```
+
+### Get Account Number and Sequence
+
+```bash
+# Account details for transactions
+export ISSUER_ACCOUNT_NUMBER=$($AXONED_PATH query auth account $ISSUER_ADDRESS --node $AXONE_NODE_RPC -o json | jq -r '.account.value.account_number')
+export ISSUER_SEQUENCE=$($AXONED_PATH query auth account $ISSUER_ADDRESS --node $AXONE_NODE_RPC -o json | jq -r '.account.value.sequence')
+
 echo "ISSUER_ACCOUNT_NUMBER=\"$ISSUER_ACCOUNT_NUMBER\""
 echo "ISSUER_ACCOUNT_NUMBER=\"$ISSUER_ACCOUNT_NUMBER\"" >> $LOG_PATH/implementation.log
 echo "ISSUER_SEQUENCE=\"$ISSUER_SEQUENCE\""
 echo "ISSUER_SEQUENCE=\"$ISSUER_SEQUENCE\"" >> $LOG_PATH/implementation.log
 ```
 
-## Set Smart Contracts
+### Verify Generated DIDs
+
+Get all created keys:
+
+```bash
+$AXONED_PATH keys list $KEYRING_BACKEND
+```
+
+## Set Up Smart Contracts
 
 ### Objectarium
 
