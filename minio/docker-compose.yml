@@ -29,7 +29,7 @@ services:
     tty: true         # Allocate a TTY
     entrypoint: >
       /bin/sh -c "
-      mc mb MYSTORAGE/test;
-      mc cp ./data/README.md MYSTORAGE/test;
+      mc mb MYSTORAGE/doctai;
+      mc cp ./data/README.md MYSTORAGE/doctai;
       exec /bin/sh;  # Keep container open
       "

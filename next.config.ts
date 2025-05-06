@@ -22,11 +22,10 @@ const nextConfig: NextConfig = {
         // 🔕 Silencia critical dependency warning
         config.module.exprContextCritical = false;
 
-        if (dev) {
-            config.devtool = "eval-source-map"; // Fast for development
-        } else {
-            config.devtool = "source-map"; // Detailed for production
-        }
+        config.resolve.fallback = {
+            ...config.resolve.fallback,
+            "rdf-canonize-native": false,
+        };
 
         return config;
     },

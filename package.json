@@ -13,27 +13,43 @@
   },
   "description": "AI agent demo running on the Axone protocol for collaborative medical diagnosis.",
   "scripts": {
-    "dev": "next dev",
-    "deb": "cross-env DEBUG=true NODE_OPTIONS='--inspect' node --max-old-space-size=16384 node_modules/.bin/next  -p 3000",
+    "dev": "node --max-old-space-size=16384 node_modules/.bin/next dev -p 3000",
+    "deb": "node --inspect=9229 node_modules/.bin/next dev -p 3000",
     "build": "next build",
+    "kill": "npx kill-port 3000",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "clean": "rm -fr ./.next",
+    "cleanAll": "rm -fr ./node_modules ./.next"
   },
   "engines": {
     "node": "^22.15",
     "pnpm": "^10.10"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.802.0",
     "@cosmjs/cosmwasm-stargate": "^0.33.1",
     "@cosmjs/crypto": "^0.33.1",
     "@cosmjs/encoding": "^0.33.1",
+    "@digitalbazaar/di-sd-primitives": "^3.1.0",
+    "@digitalbazaar/vc": "^7.2.0",
     "@keplr-wallet/cosmos": "^0.12.230",
+    "@noble/secp256k1": "^2.2.3",
+    "axios": "^1.9.0",
     "bs58": "^6.0.0",
+    "ecdsa-secp256k1-signature-2019": "github:digitalbazaar/ecdsa-secp256k1-signature-2019",
+    "elliptic": "^6.6.1",
+    "jsonld": "^8.3.3",
+    "jsonld-document-loader": "^2.3.0",
+    "jsonld-signatures": "^11.5.0",
+    "lucide-react": "^0.507.0",
+    "multiformats": "^13.3.2",
     "next": "15.3.1",
     "next-auth": "^4.24.11",
     "pg": "^8.14.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-dropzone": "^14.3.8",
     "reflect-metadata": "^0.2.2",
     "sass": "^1.86.3",
     "secp256k1": "^5.0.1",
@@ -43,6 +59,8 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@keplr-wallet/types": "^0.12.216",
+    "@types/elliptic": "^6.4.18",
+    "@types/jsonld": "^1.5.15",
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
@@ -53,6 +71,7 @@
     "ignore-loader": "^0.1.2",
     "markdownlint-cli2": "^0.17.2",
     "null-loader": "^4.0.1",
+    "rdf-canonize": "^4.0.1",
     "typescript": "^5"
   },
   "packageManager": "pnpm@10.10.0+sha512.d615db246fe70f25dcfea6d8d73dee782ce23e2245e3c4f6f888249fb568149318637dca73c2c5c8ef2a4ca0d5657fb9567188bfab47f566d1ee6ce987815c39"
