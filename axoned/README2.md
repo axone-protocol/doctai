@@ -28,6 +28,7 @@
     - [Get All Triples](#get-all-triples)
     - [Get MinIO Gov Address](#get-minio-gov-address)
     - [Get Zone DID from MinIO Service DID using Zone Membership Credential](#get-zone-did-from-minio-service-did-using-zone-membership-credential)
+    - [Get Credential From DID](#get-credential-from-did)
 
 ## Set Up Enviromental Variables
 
@@ -776,5 +777,80 @@ export QUERY=$(jq -n --arg minioDID "$MINIO_DID" '{
 # Ejecutar consulta corregida
 $AXONED_PATH query wasm contract-state smart $COGNITARIUM_ADDR "$QUERY" \
   --node $AXONE_NODE_RPC --output json | jq '.data.results.bindings'
+
+```
+
+### Get Credential From DID
+
+```bash
+
+DID="did:key:z6DtpnQQd9UxRMJTtqXA4JJvqP7rin3sC4QvJ4amsyayDuZA"
+
+QUERY=$(jq -n --arg did "$DID" '{
+  select: {
+    query: {
+      prefixes: [],
+      select: [
+        { "variable": "credential" }
+      ],
+      where: {
+        bgp: {
+          patterns: [
+            {
+              subject: { "variable": "credential" },
+              predicate: {
+                named_node: {
+                  full: "dataverse:credential:body#subject"
+                }
+              },
+              object: {
+                node: {
+                  named_node: {
+                    full: $did
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}')
+
+$AXONED_PATH query wasm contract-state smart $COGNITARIUM_ADDR "$QUERY" --node $AXONE_NODE_RPC --output json | jq
+
+CRED_IRI="https://w3id.org/axone/ontology/v4/schema/credential/dataset/description/e1508ef0-fb4b-486e-b4a3-486d1fef79d5"
+
+QUERY=$(jq -n --arg iri "$CRED_IRI" '{
+  select: {
+    query: {
+      prefixes: [],
+      select: [
+        { "variable": "p" },
+        { "variable": "o" }
+      ],
+      where: {
+        bgp: {
+          patterns: [
+            {
+              subject: {
+                node: {
+                  named_node: {
+                    full: $iri
+                  }
+                }
+              },
+              predicate: { variable: "p" },
+              object: { variable: "o" }
+            }
+          ]
+        }
+      }
+    }
+  }
+}')
+
+$AXONED_PATH query wasm contract-state smart $COGNITARIUM_ADDR "$QUERY" --node $AXONE_NODE_RPC --output json | jq
 
 ```
