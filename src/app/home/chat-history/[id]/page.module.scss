@@ -1,0 +1,71 @@
+.chatContainer {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.backLink {
+    margin-bottom: 1rem;
+    display: inline-block;
+    font-size: 0.9rem;
+    color: var(--color-primary);
+    text-decoration: underline;
+
+    &:hover {
+        text-decoration: none;
+    }
+}
+
+.datasetInfo {
+     margin: 1rem 0 2rem;
+    padding: 1rem;
+    border-radius: 8px;
+    background-color: var(--color-bg-alt);
+    font-size: 0.95rem;
+    word-break: break-word;
+
+    a {
+        color: var(--color-primary);
+        text-decoration: underline;
+
+        &:hover {
+            text-decoration: none;
+        }
+    }
+}
+
+.messages {
+    margin-top: 1rem;
+    margin-bottom: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.message {
+    padding: 1rem;
+    border-radius: 8px;
+    background-color: var(--color-bg-alt);
+    font-size: 0.95rem;
+    word-break: break-word;
+}
+
+.user {
+    background-color: #dde7ff;
+}
+
+.assistant {
+    background-color: #eeeeee;
+}
+
+.message strong {
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.message small {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--color-text-light);
+}
