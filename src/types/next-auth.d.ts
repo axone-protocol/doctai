@@ -5,6 +5,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 declare module "next-auth" {
     interface Session {
         user: {
+            id: string;
             address: string;
             userType: "contributor" | "guest";
             userDID: string;
@@ -14,6 +15,7 @@ declare module "next-auth" {
     }
 
     interface JWT {
+        id: string;
         address: string;
         userType: "contributor" | "guest";
         userDID: string;

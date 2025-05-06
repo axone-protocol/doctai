@@ -1,8 +1,15 @@
-import { getDidFromPubKeyBase64, verifyADR36Signature } from "@/lib/keplr/keplr";
+import {
+    getDidFromPubKeyBase64,
+    verifyADR36Signature,
+} from "@/lib/cosmos/frontend/keplr";
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import { queryIsContributor } from "@/lib/keplr/utils";
-import { SESSION_MAX_AGE } from "@/lib/constants";
+import {
+    fetchGovAddressFromDID,
+    fetchZoneDIDFromMinIODID,
+} from "@/lib/cosmos/frontend/axone";
+import { queryIsContributor } from "@/lib/cosmos/backend/axone";
+import { MINIO_DID, SESSION_MAX_AGE } from "@/lib/constants";
 import { PostgreSQLDatabaseService } from "@/lib/backend/PostgreSQLDatabaseService";
 import { User } from "@/entities/User";
 
@@ -58,7 +65,20 @@ const handler = NextAuth({
                     //---------------------------------------
                     const userDID = getDidFromPubKeyBase64(pubKey);
                     //---------------------------------------
-                    const isContributor = await queryIsContributor(userDID);
+                    // Fetch MINIO related zone and governance info
+                    const zoneDID = await fetchZoneDIDFromMinIODID(MINIO_DID);
+                    if (!zoneDID)
+                        throw new Error("Zone DID not found from MINIO_DID");
+                    const zoneGovAddress = await fetchGovAddressFromDID(
+                        zoneDID
+                    );
+                    if (!zoneGovAddress)
+                        throw new Error("Zone governance address not found");
+                    //---------------------------------------
+                    const isContributor = await queryIsContributor(
+                        zoneGovAddress,
+                        userDID
+                    );
                     //---------------------------------------
                     const db = await PostgreSQLDatabaseService.getDataSource();
                     const repo = db.getRepository(User.name);
@@ -79,7 +99,7 @@ const handler = NextAuth({
                     // const maxAge = rememberMe === "true" ? SESSION_MAX_AGE : 0;
                     //---------------------------------------
                     return {
-                        id: address,
+                        id: user.id,
                         address,
                         userType: isContributor ? "contributor" : "guest",
                         userDID,
@@ -97,11 +117,13 @@ const handler = NextAuth({
             if (
                 user &&
                 typeof user === "object" &&
+                "id" in user &&
                 "address" in user &&
                 "userType" in user &&
                 "userDID" in user
                 //  && "maxAge" in user
             ) {
+                token.id = (user as any).id;
                 token.address = (user as any).address;
                 token.userType = (user as any).userType;
                 token.userDID = (user as any).userDID;
@@ -112,6 +134,7 @@ const handler = NextAuth({
         async session({ session, token }) {
             session.user = {
                 ...(session.user || {}),
+                id: token.id as string,
                 address: token.address as string,
                 userType: token.userType as "contributor" | "guest",
                 userDID: token.userDID as string,
