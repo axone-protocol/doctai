@@ -108,8 +108,8 @@ export async function POST(req: NextRequest) {
         }
 
         console.log("[Upload] Upload permitted. Creating credential...");
-        const credentialId = await createAndPublishCredential(file);
-        console.log("[Upload] Credential created with ID:", credentialId);
+        const { datasetDID, txHash: datasetCredentialTxHash } = await createAndPublishCredential(file);
+        console.log(`[Upload] Credential created with ID: ${datasetDID} and txHash: ${datasetCredentialTxHash}`); 
 
         const buffer = Buffer.from(await file.arrayBuffer());
         const fileKey = `${userDID}/${Date.now()}_${file.name}`;
@@ -139,6 +139,8 @@ export async function POST(req: NextRequest) {
             title: `Chat on ${file.name}`,
             userId,
             datasetUrl,
+            datasetDID,
+            datasetCredentialTxHash,
         });
         await db.getRepository(Chat).save(chat);
 
