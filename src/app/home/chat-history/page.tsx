@@ -5,14 +5,14 @@ import { useUserStore } from "@/store/useUserStore";
 import { ROUTES } from "@/lib/routes";
 import { Chat } from "@/entities/Chat";
 import { fetchEntities } from "@/lib/frontend/api";
-
+import styles from "./page.module.scss";
 
 export default function ChatHistoryPage() {
-    const { address, user } = useUserStore();
+    const { user } = useUserStore();
     const [chats, setChats] = useState<Chat[]>([]);
 
     useEffect(() => {
-        if (user === undefined) return;
+        if (!user) return;
         const loadChats = async () => {
             try {
                 const chats = await fetchEntities<Chat>(Chat.name, {
@@ -25,18 +25,29 @@ export default function ChatHistoryPage() {
                 console.error("Failed to fetch chat history:", error);
             }
         };
-    
         loadChats();
     }, [user]);
 
     return (
-        <div>
-            <h1>Chat History</h1>
-            <ul>
+        <div className={styles.chatHistoryContainer}>
+            <h1>Past Chats</h1>
+            <ul className={styles.chatList}>
                 {chats.map((chat) => (
-                    <li key={chat.id}>
-                        <Link href={`${ROUTES.CHAT}/${chat.id}`}>
-                            {chat.title || "Untitled Chat"} — {new Date(chat.createdAt).toLocaleString()}
+                    <li key={chat.id} className={styles.chatItem}>
+                        <Link
+                            href={`${ROUTES.CHAT_INTERACTION}/${chat.id}`}
+                            className={styles.chatLink}
+                        >
+                            {chat.title || "Untitled Chat"} <br />
+                            <small>
+                                {new Date(chat.createdAt).toLocaleString()}
+                            </small>
+                        </Link>
+                        <Link
+                            href={`${ROUTES.CHAT_HISTORY_DETAILS}/${chat.id}`}
+                            className={styles.viewLink}
+                        >
+                            View
                         </Link>
                     </li>
                 ))}

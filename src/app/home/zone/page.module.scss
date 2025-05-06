@@ -1,6 +1,52 @@
-.code {
-    white-space: "pre-wrap";
-    background: "#f8f8f8";
-    padding: "1rem";
-    border-radius: "8px";
+.zoneContainer {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.card {
+    display: flex;
+    gap: 1rem;
+    background-color: var(--color-bg-alt);
+    border: 1px solid var(--color-border);
+    padding: 1.5rem;
+    border-radius: var(--radius);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+}
+
+.icon {
+    font-size: 2rem;
+    color: var(--color-accent);
+}
+
+.details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.title {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+    color: var(--color-primary);
+}
+
+.codeSection {
+    margin-top: 2rem;
+}
+
+.codeSection h3 {
+    margin-bottom: 0.5rem;
+    color: var(--color-primary);
+}
+
+.codeBlock {
+    white-space: pre-wrap;
+    background: #f8f8f8;
+    padding: 1rem;
+    border-radius: 8px;
+    font-family: monospace;
+    font-size: 0.9rem;
+    border: 1px solid var(--color-border);
 }

@@ -1,102 +1,117 @@
 "use client";
-import { useEffect, useState } from "react";
+import { ROUTES } from "@/lib/routes";
 import { useUserStore } from "@/store/useUserStore";
-import { createEntity } from "@/lib/frontend/api";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useDropzone } from "react-dropzone";
 import styles from "./page.module.scss";
-import { Chat } from "@/entities/Chat";
-
-interface Message {
-    id: string;
-    role: "user" | "assistant";
-    content: string;
-    createdAt?: string;
-}
+import { createTx } from "@/lib/cosmos/frontend/keplr";
+import axios from "axios";
 
 export default function ChatPage() {
-    const { address, user } = useUserStore();
-    const [chatId, setChatId] = useState<string | undefined>(undefined);
-    const [messages, setMessages] = useState<Message[]>([]);
-    const [input, setInput] = useState("");
+    const { user } = useUserStore();
+    const router = useRouter();
+    const [file, setFile] = useState<File | null>(null);
     const [loading, setLoading] = useState(false);
-    const [hasCreatedChat, setHasCreatedChat] = useState(false);
+    const [uploadProgress, setUploadProgress] = useState<number | null>(null);
 
-    useEffect(() => {
-        if (!user?.id || hasCreatedChat) return;
-        (async () => {
-            const chat = await createEntity<Chat>(Chat.name, {
-                title: "New Chat",
-                userId: user.id,
-            });
-            setChatId(chat.id);
-            setHasCreatedChat(true);
-        })();
-    }, [user?.id, hasCreatedChat]);
+    const onDrop = (acceptedFiles: File[]) => {
+        if (acceptedFiles.length) {
+            setFile(acceptedFiles[0]);
+        }
+    };
 
-    const sendMessage = async () => {
-        if (!input.trim() || !chatId) return;
+    // Dropzone config
+    const { getRootProps, getInputProps, isDragActive } = useDropzone({
+        onDrop,
+        maxSize: 50 * 1024 * 1024, // 50MB
+        accept: {
+            "text/csv": [".csv"],
+            "application/json": [".json"],
+        },
+    });
+
+    const handleUpload = async () => {
+        if (!file || !user?.id) return;
         setLoading(true);
+        setUploadProgress(0);
 
-        const userMsg: Message = {
-            id: crypto.randomUUID(),
-            role: "user",
-            content: input,
-        };
-        setMessages((prev) => [...prev, userMsg]);
-        setInput("");
-
-        const res = await fetch(`/api/entities/chat/${chatId}/interact`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ prompt: userMsg.content }),
-        });
-
-        const data = await res.json();
-
-        if (data.assistantResponse) {
-            const assistantMsg: Message = {
-                id: crypto.randomUUID(),
-                role: "assistant",
-                content: data.assistantResponse,
-            };
-            setMessages((prev) => [...prev, assistantMsg]);
+        let txHash = null;
+        if (user.userType !== "contributor") {
+            txHash = await createTx(user.address, "axoneAddressHere", 1);
+            if (!txHash) {
+                alert("Payment failed");
+                setLoading(false);
+                return;
+            }
         }
 
-        setLoading(false);
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("userId", user.id);
+        if (txHash) formData.append("txHash", txHash);
+
+        try {
+            const res = await axios.post("/api/entities/upload", formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+                onUploadProgress: (event) => {
+                    const percent = Math.round(
+                        (event.loaded * 100) / (event.total || 1)
+                    );
+                    setUploadProgress(percent);
+                },
+            });
+
+            const chat = res.data;
+            router.push(`${ROUTES.CHAT_INTERACTION}/${chat.id}`);
+        } catch (error: any) {
+            const reason =
+                error?.response?.data?.reason ||
+                error?.response?.data?.error ||
+                "Upload failed";
+
+            console.error("Upload error:", error.response?.data || error);
+            alert(reason);
+        } finally {
+            setLoading(false);
+            setUploadProgress(null);
+        }
     };
 
     return (
-        <div className={styles.chatContainer}>
-            <h1>Chat with DoctAI</h1>
-            <div className={styles.messages}>
-                {messages.map((msg) => (
-                    <div
-                        key={msg.id}
-                        className={`${styles.message} ${
-                            msg.role === "user" ? styles.user : styles.assistant
-                        }`}
-                    >
-                        <strong>
-                            {msg.role === "user" ? "You" : "DoctAI"}
-                        </strong>
-                        {msg.content}
-                    </div>
-                ))}
+        <div className={styles.chatUploadContainer}>
+            <h1>Upload Dataset to Start Chat with DoctAI</h1>
+            <div className={styles.uploadBox} {...getRootProps()}>
+                <input {...getInputProps()} />
+                {isDragActive ? (
+                    <p>Drop your CSV file here...</p>
+                ) : (
+                    <p>Drag and drop a CSV here, or click to select one.</p>
+                )}
             </div>
-            <div className={styles.inputContainer}>
-                <input
-                    className={styles.inputField}
-                    type="text"
-                    placeholder="Type your question..."
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-                />
+            {file && (
+                <div className={styles.fileInfo}>
+                    <p>
+                        <strong>Filename:</strong> {file.name}
+                    </p>
+                    <p>
+                        <strong>Size:</strong>{" "}
+                        {(file.size / 1024 / 1024).toFixed(2)} MB
+                    </p>
+                    {uploadProgress !== null && (
+                        <progress value={uploadProgress} max={100}></progress>
+                    )}
+                </div>
+            )}
+            <div className={styles.uploadButtonWrapper}>
                 <button
-                    className={styles.sendButton}
-                    onClick={sendMessage}
-                    disabled={loading}
+                    className={styles.uploadButton}
+                    disabled={loading || !file}
+                    onClick={handleUpload}
                 >
-                    {loading ? "Sending..." : "Send"}
+                    {loading ? "Uploading..." : "Upload and Start Chat"}
                 </button>
             </div>
         </div>

@@ -1,47 +1,61 @@
 "use client";
 
-import {
-    HEARTH_LABS_ZONE_DID
-} from "@/lib/constants";
-import { fetchPrologFromAddress, fetchZoneGovAddress } from "@/lib/keplr/utils";
-import { useEffect, useState } from "react";
+// app/(zone)/zone/page.tsx
+import { useAxoneStore } from "@/store/axoneStore";
+import { Landmark } from "lucide-react";
 import styles from "./page.module.scss";
 
 export default function ZonePage() {
-    const [zoneGovAddress, setZoneGovAddress] = useState<string>("loading...");
-    const [prologCode, setPrologCode] = useState<string>("");
-
-    const [loading, setLoading] = useState<boolean>(true);
-
-    useEffect(() => {
-        async function loadZoneGovernance() {
-            try {
-                const govAddr = await fetchZoneGovAddress(HEARTH_LABS_ZONE_DID);
-                setZoneGovAddress(govAddr);
-
-                const prolog = await fetchPrologFromAddress(govAddr);
-                setPrologCode(prolog);
-            } catch (error) {
-                console.error("Error fetching governance or prolog:", error);
-                setZoneGovAddress("error");
-                setPrologCode("failed to load");
-            } finally {
-                setLoading(false);
-            }
-        }
-
-        loadZoneGovernance();
-    }, []);
+    const {
+        zoneDID,
+        minioDID,
+        zoneGovAddress,
+        minioGovAddress,
+        zoneGovCode,
+        minioGovCode,
+    } = useAxoneStore();
 
     return (
-        <>
-            <h1>Zone Hearts Labs</h1>
-            <p>Zone DID: {HEARTH_LABS_ZONE_DID}</p>
-            <p>Zone Gov Address: {loading ? "loading..." : zoneGovAddress}</p>
-            <p>Zone Gov Code: </p>
-            <pre className={styles.code}>
-                {loading ? "loading..." : prologCode}
-            </pre>
-        </>
+        <div className={styles.zoneContainer}>
+            {/* Zone Card */}
+            <div className={styles.card}>
+                <div className={styles.icon}>
+                    <Landmark />
+                </div>
+                <div className={styles.details}>
+                    <h2 className={styles.title}>Zone: Hearth Labs</h2>
+                    <p><strong>DID:</strong> {zoneDID}</p>
+                    <p><strong>Governance Contract:</strong> {zoneGovAddress}</p>
+                </div>
+            </div>
+
+            {/* Minio Card */}
+            <div className={styles.card}>
+                <div className={styles.icon}>
+                    <Landmark />
+                </div>
+                <div className={styles.details}>
+                    <h2 className={styles.title}>MinIO</h2>
+                    <p><strong>DID:</strong> {minioDID}</p>
+                    <p><strong>Governance Contract:</strong> {minioGovAddress}</p>
+                </div>
+            </div>
+
+            {/* Zone Governance Code */}
+            <div className={styles.codeSection}>
+                <h3>Zone Governance Code</h3>
+                <pre className={styles.codeBlock}>
+                    {zoneGovCode}
+                </pre>
+            </div>
+
+            {/* MinIO Governance Code */}
+            <div className={styles.codeSection}>
+                <h3>MinIO Governance Code</h3>
+                <pre className={styles.codeBlock}>
+                    {minioGovCode}
+                </pre>
+            </div>
+        </div>
     );
 }
