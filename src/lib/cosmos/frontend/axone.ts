@@ -1,8 +1,83 @@
-import {
-    AXONE_NODE_RPC,
-    COGNITARIUM_ADDR
-} from "@/lib/constants";
+import { AXONE_NODE_RPC, COGNITARIUM_ADDR } from "@/lib/constants";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
+
+export async function fetchFullCredentialByDID(
+    did: string
+): Promise<Record<string, any>[]> {
+    console.log("fetchFullCredentialByDID → did:", did);
+    const client = await CosmWasmClient.connect(AXONE_NODE_RPC);
+
+    // Paso 1: Buscar IRI de la credencial desde el DID (como body#subject)
+    const queryFindIRI = {
+        select: {
+            query: {
+                prefixes: [],
+                select: [{ variable: "credential" }],
+                where: {
+                    bgp: {
+                        patterns: [
+                            {
+                                subject: { variable: "credential" },
+                                predicate: {
+                                    named_node: {
+                                        full: "dataverse:credential:body#subject"
+                                    }
+                                },
+                                object: {
+                                    node: {
+                                        named_node: { full: did }
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    };
+
+    const iriResponse = await client.queryContractSmart(COGNITARIUM_ADDR, queryFindIRI);
+    const iri = iriResponse?.results?.bindings?.[0]?.credential?.value?.full;
+    if (!iri) throw new Error("Credential IRI not found for DID");
+
+    console.log("Found credential IRI:", iri);
+
+    // Paso 2: DESCRIBE los triples de esa IRI
+    const queryDescribe = {
+        select: {
+            query: {
+                prefixes: [],
+                select: [
+                    { variable: "p" },
+                    { variable: "o" }
+                ],
+                where: {
+                    bgp: {
+                        patterns: [
+                            {
+                                subject: {
+                                    node: {
+                                        named_node: { full: iri }
+                                    }
+                                },
+                                predicate: { variable: "p" },
+                                object: { variable: "o" }
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    };
+
+    const describeResponse = await client.queryContractSmart(COGNITARIUM_ADDR, queryDescribe);
+    const triples = describeResponse?.results?.bindings;
+    if (!triples || triples.length === 0) {
+        throw new Error("No triples found for credential IRI");
+    }
+
+    return triples;
+}
 
 export async function fetchGovAddressFromDID(credDID: string): Promise<string> {
     try {
