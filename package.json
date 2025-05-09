@@ -43,6 +43,7 @@
     "@digitalbazaar/vc": "^7.2.0",
     "@keplr-wallet/cosmos": "^0.12.230",
     "@noble/hashes": "^1.8.0",
+    "@noble/ed25519": "^2.2.3",
     "@noble/secp256k1": "^2.2.3",
     "@scure/bip32": "^1.7.0",
     "@scure/bip39": "^1.6.0",
