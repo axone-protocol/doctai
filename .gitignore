@@ -12,6 +12,11 @@
 !.yarn/releases
 !.yarn/versions
 
+# package manager lock files
+# only pnpm-lock.yaml should be kept.
+package-lock.json
+yarn.lock
+
 # testing
 /coverage
 
@@ -34,7 +39,7 @@ yarn-error.log*
 
 # Ignore all env files
 .env
-.env.local 
+.env.local
 .env.*  # ignores .env.production, .env.staging, etc.
 # except for example file
 !.env.example
