@@ -6,6 +6,7 @@ import { ROUTES } from "@/lib/routes";
 import { Chat } from "@/entities/Chat";
 import { fetchEntities } from "@/lib/frontend/api";
 import styles from "./page.module.scss";
+import { ENTITY_NAMES } from "@/lib/constants";
 
 export default function ChatHistoryPage() {
     const { user } = useUserStore();
@@ -15,7 +16,7 @@ export default function ChatHistoryPage() {
         if (!user) return;
         const loadChats = async () => {
             try {
-                const chats = await fetchEntities<Chat>(Chat.name, {
+                const chats = await fetchEntities<Chat>(ENTITY_NAMES.Chat, {
                     filter: { userId: user.id },
                     sort: "createdAt",
                     order: "desc",

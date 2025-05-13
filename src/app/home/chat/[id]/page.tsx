@@ -10,6 +10,7 @@ import { getRelationKey } from "@/lib/relations";
 import styles from "./page.module.scss";
 import { fetchFullCredentialByDID } from "@/lib/cosmos/frontend/axone";
 import { Loader } from "lucide-react";
+import { ENTITY_NAMES } from "@/lib/constants";
 
 interface Message {
     id: string;
@@ -37,9 +38,9 @@ export default function ChatInteractPage() {
         const loadAll = async () => {
             try {
                 const msgs = await fetchEntityRelation<ChatMessage>(
-                    Chat.name,
+                    ENTITY_NAMES.Chat,
                     chatId as string,
-                    getRelationKey(Chat, ChatMessage)
+                    getRelationKey(ENTITY_NAMES.Chat, ENTITY_NAMES.ChatMessage)
                 );
 
                 const formatted = msgs.map((msg) => ({
@@ -52,7 +53,7 @@ export default function ChatInteractPage() {
                 setMessages(formatted);
 
                 const chat = await fetchEntityById<Chat>(
-                    Chat.name,
+                    ENTITY_NAMES.Chat,
                     chatId as string
                 );
                 setChat(chat);

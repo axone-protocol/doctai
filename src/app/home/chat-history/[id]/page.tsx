@@ -8,6 +8,7 @@ import { ChatMessage } from "@/entities/ChatMessage";
 import { getRelationKey } from "@/lib/relations";
 import { ROUTES } from "@/lib/routes";
 import styles from "./page.module.scss";
+import { ENTITY_NAMES } from "@/lib/constants";
 
 export default function ChatHistoryDetailPage() {
     const { id } = useParams();
@@ -20,9 +21,9 @@ export default function ChatHistoryDetailPage() {
         const loadMessages = async () => {
             try {
                 const msgs = await fetchEntityRelation<ChatMessage>(
-                    Chat.name,
+                    ENTITY_NAMES.Chat,
                     id as string,
-                    getRelationKey(Chat, ChatMessage)
+                    getRelationKey(ENTITY_NAMES.Chat, ENTITY_NAMES.ChatMessage)
                 );
                 setMessages(msgs);
             } catch (error) {
@@ -32,7 +33,10 @@ export default function ChatHistoryDetailPage() {
 
         const loadChatInfo = async () => {
             try {
-                const chat = await fetchEntityById<Chat>(Chat.name, id as string);
+                const chat = await fetchEntityById<Chat>(
+                    ENTITY_NAMES.Chat,
+                    id as string
+                );
                 setDatasetUrl(chat.datasetUrl || null);
             } catch (error) {
                 console.error("Failed to fetch chat info:", error);
@@ -54,7 +58,11 @@ export default function ChatHistoryDetailPage() {
             {datasetUrl && (
                 <div className={styles.datasetInfo}>
                     <strong>Dataset:</strong>{" "}
-                    <a href={datasetUrl} target="_blank" rel="noopener noreferrer">
+                    <a
+                        href={datasetUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
                         {datasetUrl}
                     </a>
                 </div>
@@ -68,10 +76,14 @@ export default function ChatHistoryDetailPage() {
                             msg.role === "user" ? styles.user : styles.assistant
                         }`}
                     >
-                        <strong>{msg.role === "user" ? "You" : "DoctAI"}</strong>
+                        <strong>
+                            {msg.role === "user" ? "You" : "DoctAI"}
+                        </strong>
                         {msg.content}
                         <br />
-                        <small>{new Date(msg.createdAt).toLocaleString()}</small>
+                        <small>
+                            {new Date(msg.createdAt).toLocaleString()}
+                        </small>
                     </div>
                 ))}
             </div>
