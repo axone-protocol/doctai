@@ -67,7 +67,7 @@ export class PostgreSQLDatabaseService {
                     username: process.env.STORAGE_POSTGRES_USER,
                     password: process.env.STORAGE_POSTGRES_PASSWORD,
                     database: process.env.STORAGE_POSTGRES_DATABASE,
-                    entities: [User, Chat, ChatMessage],
+                    entities: [Chat, ChatMessage, User],
                     synchronize: true, // auto sync schema
                     logging: swLogsDBDebug
                         ? ["query", "error", "schema", "warn"]
