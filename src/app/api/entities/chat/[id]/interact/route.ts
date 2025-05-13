@@ -1,8 +1,8 @@
 // app/api/entities/chat/[id]/interact/route.ts
 import { Chat } from "@/entities/Chat";
 import { ChatMessage } from "@/entities/ChatMessage";
-import { User } from "@/entities/User";
 import { PostgreSQLDatabaseService } from "@/lib/backend/PostgreSQLDatabaseService";
+import { ENTITY_NAMES } from "@/lib/constants";
 import { getRelationPropertyName } from "@/lib/relations";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -16,9 +16,17 @@ export async function POST(
     const repoChat = db.getRepository(Chat);
     const repoMessage = db.getRepository(ChatMessage);
     try {
+        console.log("[DEBUG] ENTITY_NAMES", ENTITY_NAMES);
+        console.log("[DEBUG] Chat entity", Chat);
+        console.log(
+            "[DEBUG] getRelationPropertyName(Chat, User)",
+            getRelationPropertyName(ENTITY_NAMES.Chat, ENTITY_NAMES.User)
+        );
         const chat = await repoChat.findOne({
             where: { id: chatId },
-            relations: [getRelationPropertyName(Chat.name, User.name)],
+            relations: [
+                getRelationPropertyName(ENTITY_NAMES.Chat, ENTITY_NAMES.User),
+            ],
         });
         if (!chat) {
             return NextResponse.json(
