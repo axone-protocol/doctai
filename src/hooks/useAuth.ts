@@ -5,6 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { useUserStore } from "@/store/useUserStore";
 import { fetchEntities } from "@/lib/frontend/api";
 import { User } from "@/entities/User";
+import { ENTITY_NAMES } from "@/lib/constants";
 
 export function useAuth({ autoRedirect = true } = {}) {
     const { data: session, status } = useSession();
@@ -26,7 +27,7 @@ export function useAuth({ autoRedirect = true } = {}) {
         const hydrateUser = async () => {
             if (session?.user?.address) {
                 // Use generic entity filter to fetch user from DB
-                const users = await fetchEntities<User>(User.name, {
+                const users = await fetchEntities<User>(ENTITY_NAMES.User, {
                     filter: { address: session.user.address },
                 });
                 const dbUser = users[0];

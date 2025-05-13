@@ -9,7 +9,7 @@ import {
     fetchZoneDIDFromMinIODID,
 } from "@/lib/cosmos/frontend/axone";
 import { queryIsContributor } from "@/lib/cosmos/backend/axone";
-import { MINIO_DID, SESSION_MAX_AGE } from "@/lib/constants";
+import { ENTITY_NAMES, MINIO_DID, SESSION_MAX_AGE } from "@/lib/constants";
 import { PostgreSQLDatabaseService } from "@/lib/backend/PostgreSQLDatabaseService";
 import { User } from "@/entities/User";
 
@@ -81,7 +81,7 @@ const handler = NextAuth({
                     );
                     //---------------------------------------
                     const db = await PostgreSQLDatabaseService.getDataSource();
-                    const repo = db.getRepository(User.name);
+                    const repo = db.getRepository(ENTITY_NAMES.User);
                     let user = await repo.findOneBy({ address });
                     if (user) {
                         user.userType = isContributor ? "contributor" : "guest";
