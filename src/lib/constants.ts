@@ -104,8 +104,10 @@ export const isBrowser = typeof window !== "undefined";
 
 
 //------------------------------------------------------------------
+// ENTITIES
 
-
-
-
-
+export const ENTITY_NAMES = {
+  Chat: "Chat",
+  User: "User",
+  ChatMessage: "ChatMessage",
+};

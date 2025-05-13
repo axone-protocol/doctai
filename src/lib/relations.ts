@@ -23,10 +23,10 @@ export function getRelationPropertyName(
 }
 
 export function getRelationKey(
-    entityClass: { name: string },
-    relatedClass: { name: string }
+    entity: string,
+    related: string
 ): string {
-    return getRelationPropertyName(entityClass.name, relatedClass.name);
+    return getRelationPropertyName(entity, related);
 }
 
 export function getEntityNameFromRelationProperty(
