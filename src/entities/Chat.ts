@@ -1,5 +1,5 @@
 // entities/Chat.ts
-import { formatTableName } from "@/lib/backend/utils";
+import { ENTITY_NAMES } from "@/lib/constants";
 import {
     Column,
     CreateDateColumn,
@@ -10,20 +10,19 @@ import {
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from "typeorm";
-import { ChatMessage } from "./ChatMessage";
-import { User } from "./User";
+import { IChat, IChatMessage, type IUser } from "./types";
 
-@Entity({ name: formatTableName(Chat.name) })
-export class Chat {
+@Entity({ name: ENTITY_NAMES.Chat })
+export class Chat implements IChat {
     @PrimaryGeneratedColumn("uuid")
     id!: string;
 
     @Column()
     title!: string;
 
-    @ManyToOne("User", "chat")
+    @ManyToOne("User", "chats")
     @JoinColumn({ name: "userId" })
-    user!: User;
+    user!: IUser;
 
     @Column()
     userId!: string;
@@ -38,7 +37,7 @@ export class Chat {
     datasetCredentialTxHash?: string;
 
     @OneToMany("ChatMessage", "chat", { cascade: true })
-    chatMessages!: ChatMessage[];
+    chatMessages!: IChatMessage[];
 
     @CreateDateColumn()
     createdAt!: Date;
@@ -46,3 +45,5 @@ export class Chat {
     @UpdateDateColumn()
     updatedAt!: Date;
 }
+
+Object.defineProperty(Chat, "name", { value: ENTITY_NAMES.Chat });

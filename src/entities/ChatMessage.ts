@@ -1,24 +1,24 @@
 // entities/ChatMessage.ts
+import { ENTITY_NAMES } from "@/lib/constants";
 import {
-    Entity,
-    PrimaryGeneratedColumn,
     Column,
-    ManyToOne,
     CreateDateColumn,
-    UpdateDateColumn,
+    Entity,
     JoinColumn,
+    ManyToOne,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn,
 } from "typeorm";
-import { Chat } from "./Chat";
-import { formatTableName } from "@/lib/backend/utils";
+import { type IChat, IChatMessage } from "./types";
 
-@Entity({ name: formatTableName(ChatMessage.name) })
-export class ChatMessage {
+@Entity({ name: ENTITY_NAMES.ChatMessage })
+export class ChatMessage implements IChatMessage {
     @PrimaryGeneratedColumn("uuid")
     id!: string;
 
     @ManyToOne("Chat", "chatMessages")
     @JoinColumn({ name: "chatId" })
-    chat!: Chat;
+    chat!: IChat;
 
     @Column()
     chatId!: string;
@@ -35,3 +35,5 @@ export class ChatMessage {
     @UpdateDateColumn()
     updatedAt!: Date;
 }
+
+Object.defineProperty(ChatMessage, "name", { value: ENTITY_NAMES.ChatMessage });

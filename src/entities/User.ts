@@ -1,5 +1,5 @@
 // entities/User.ts
-import { formatTableName } from "@/lib/backend/utils";
+import { ENTITY_NAMES } from "@/lib/constants";
 import {
     Column,
     CreateDateColumn,
@@ -8,10 +8,10 @@ import {
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from "typeorm";
-import { Chat } from "./Chat";
+import { IChat, IUser } from "./types";
 
-@Entity({ name: formatTableName(User.name) })
-export class User {
+@Entity({ name: ENTITY_NAMES.User })
+export class User implements IUser {
     @PrimaryGeneratedColumn("uuid")
     id!: string;
 
@@ -24,8 +24,8 @@ export class User {
     @Column({ nullable: true })
     userDID?: string;
 
-    @OneToMany("Chat", "User")
-    chats!: Chat[];
+    @OneToMany("Chat", "user")
+    chats!: IChat[];
 
     @CreateDateColumn()
     createdAt!: Date;
@@ -33,3 +33,5 @@ export class User {
     @UpdateDateColumn()
     lastLogin!: Date;
 }
+
+Object.defineProperty(User, "name", { value: ENTITY_NAMES.User });
