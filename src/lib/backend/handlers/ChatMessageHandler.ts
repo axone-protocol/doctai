@@ -1,9 +1,10 @@
 // lib/backend/handlers/ChatMessageHandler.ts
 import { ChatMessage } from "@/entities/ChatMessage";
 import { BaseEntityServer, registerEntity } from "../BaseEntityServer";
+import { ENTITY_NAMES } from "@/lib/constants";
 
 export const ChatMessageHandler: BaseEntityServer<ChatMessage> = {
-    entityName: ChatMessage.name,
+    entityName: ENTITY_NAMES.ChatMessage,
 
     toDTO: (msg) => ({
         id: msg.id,

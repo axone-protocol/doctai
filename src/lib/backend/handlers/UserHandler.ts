@@ -1,9 +1,10 @@
 // lib/backend/handlers/UserHandler.ts
 import { User } from "@/entities/User";
 import { BaseEntityServer, registerEntity } from "../BaseEntityServer";
+import { ENTITY_NAMES } from "@/lib/constants";
 
 export const UserHandler: BaseEntityServer<User> = {
-    entityName: User.name,
+    entityName: ENTITY_NAMES.User,
 
     toDTO: (user) => ({
         id: user.id,
