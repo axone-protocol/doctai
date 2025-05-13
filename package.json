@@ -84,7 +84,7 @@
     "eslint": "^9",
     "eslint-config-next": "15.3.2",
     "ignore-loader": "^0.1.2",
-    "markdownlint-cli2": "^0.17.2",
+    "markdownlint-cli2": "^0.18.0",
     "null-loader": "^4.0.1",
     "rdf-canonize": "^4.0.1",
     "typescript": "^5"
