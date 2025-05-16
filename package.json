@@ -57,7 +57,7 @@
     "jsonld-document-loader": "^2.3.0",
     "jsonld-signatures": "^11.5.0",
     "lucide-react": "^0.510.0",
-    "multiformats": "^13.3.2",
+    "multiformats": "^13.3.4",
     "next": "15.3.2",
     "next-auth": "^4.24.11",
     "pg": "^8.14.1",
