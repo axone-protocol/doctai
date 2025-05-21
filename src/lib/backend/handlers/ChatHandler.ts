@@ -12,6 +12,7 @@ export const ChatHandler: BaseEntityServer<Chat> = {
         userId: chat.userId,
         datasetUrl: chat.datasetUrl,
         datasetDID: chat.datasetDID,
+        paymentTxHash: chat.paymentTxHash,
         datasetCredentialTxHash: chat.datasetCredentialTxHash,
         createdAt: chat.createdAt.toISOString(),
         updatedAt: chat.updatedAt.toISOString(),
@@ -24,6 +25,7 @@ export const ChatHandler: BaseEntityServer<Chat> = {
         chat.userId = dto.userId;
         chat.datasetUrl = dto.datasetUrl;
         chat.datasetDID = dto.datasetDID;
+        chat.paymentTxHash = dto.paymentTxHash;
         chat.datasetCredentialTxHash = dto.datasetCredentialTxHash;
         // chat.createdAt = new Date(dto.createdAt);
         // chat.updatedAt = new Date(dto.updatedAt);

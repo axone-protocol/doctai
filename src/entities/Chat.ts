@@ -34,10 +34,16 @@ export class Chat implements IChat {
     datasetDID?: string;
 
     @Column({ nullable: true })
+    paymentTxHash?: string;
+
+    @Column({ nullable: true })
     datasetCredentialTxHash?: string;
 
     @OneToMany("ChatMessage", "chat", { cascade: true })
     chatMessages!: IChatMessage[];
+
+    @Column({ default: "pending" })
+    status!: string;
 
     @CreateDateColumn()
     createdAt!: Date;
