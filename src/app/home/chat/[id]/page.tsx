@@ -150,6 +150,18 @@ export default function ChatInteractPage() {
                         </div>
                     )}
 
+                    {chat?.paymentTxHash && (
+                        <div className={styles.datasetInfo}>
+                            <strong>Dataset paymentTxHash:</strong> {chat.paymentTxHash}
+                        </div>
+                    )}
+
+                    {chat?.datasetCredentialTxHash && (
+                        <div className={styles.datasetInfo}>
+                            <strong>Dataset datasetCredentialTxHash:</strong> {chat.datasetCredentialTxHash}
+                        </div>
+                    )}
+
                     {datasetCredential && (
                         <div className={styles.credentialBlock}>
                             <strong>Dataset Credential</strong>

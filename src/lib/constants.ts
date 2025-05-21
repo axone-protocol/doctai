@@ -1,8 +1,6 @@
 //------------------------------------------------------------------
 // AXONE
 
-import { HdPath } from "@cosmjs/crypto/build/slip10";
-
 export const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID || "axone-dentrite-1";
 
 export const AXONED_PATH =
@@ -45,6 +43,10 @@ export const OBJECTARIUM_ADDR =
 export const COGNITARIUM_ADDR =
     process.env.NEXT_PUBLIC_COGNITARIUM_ADDR ||
     "axone1dg5acs48rj4gezvruawvcy4y7yc4frt2v4an0dzux2dqcsq3ju0sqm62mw";
+
+export const AXONE_DENOM = "uaxone";
+export const AXON_GAS_PRICE = 0.025; // en AXONE_DENOM (uaxone) por unidad de gas
+export const DEFAULT_GAS_LIMIT = 1_000_000;
 
 //------------------------------------------------------------------
 // MINIO S3

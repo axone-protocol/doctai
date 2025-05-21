@@ -1,17 +1,32 @@
 import { AXONE_NODE_RPC, CHAIN_ID } from "@/lib/constants";
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { fromBase64 } from "@cosmjs/encoding";
+import { decodePubkey } from "@cosmjs/proto-signing";
+import {
+    QueryClient,
+    setupAuthExtension,
+    StargateClient,
+} from "@cosmjs/stargate";
+import { Tendermint34Client } from "@cosmjs/tendermint-rpc";
 import { verifyADR36Amino } from "@keplr-wallet/cosmos";
+import { Keplr, Window as KeplrWindow } from "@keplr-wallet/types";
 import bs58 from "bs58";
+import { BaseAccount } from "cosmjs-types/cosmos/auth/v1beta1/auth";
 
 export const getKeplr = (): Keplr => {
     // Check if the window object has the keplr property
     if (typeof window !== "undefined" && "keplr" in window) {
         const keplrWindow = window as KeplrWindow;
+
         if (!keplrWindow.keplr) {
             alert("Please install Keplr extension!");
             throw new Error("Keplr extension is not installed");
         } else {
+            keplrWindow.keplr.defaultOptions = {
+                sign: {
+                    preferNoSetFee: true,
+                },
+            };
             return keplrWindow.keplr;
         }
     }
@@ -53,25 +68,50 @@ export const connectKeplr = async () => {
     }
 };
 
-export function verifyADR36Signature({
-    message,
-    address,
-    pubKeyBase64,
-    signatureBase64,
-}: {
-    message: string;
-    address: string;
-    pubKeyBase64: string;
-    signatureBase64: string;
-}): boolean {
-    return verifyADR36Amino(
-        "axone", // Bech32 prefix only, not the full address
-        address, // full address
-        message,
-        fromBase64(pubKeyBase64),
-        fromBase64(signatureBase64),
-        "secp256k1"
+/**
+ * Fetches account pubkey, sequence, and account number from chain
+ */
+export async function getAccountDetails(address: string) {
+    console.log(
+        `[getAccountDetails] Fetching on-chain account data for: ${address}`
     );
+
+    const tmClient = await Tendermint34Client.connect(AXONE_NODE_RPC);
+    const client = QueryClient.withExtensions(tmClient, setupAuthExtension);
+
+    const accountAny = await client.auth.account(address);
+    if (!accountAny) {
+        throw new Error(`[getAccountDetails] Account not found for ${address}`);
+    }
+
+    const decoded = BaseAccount.decode(accountAny.value);
+
+    if (!decoded.pubKey) {
+        throw new Error(
+            `[getAccountDetails] Public key not available for ${address}`
+        );
+    }
+
+    const pubkey = decodePubkey(decoded.pubKey);
+
+    if (!pubkey) {
+        throw new Error(
+            `[getAccountDetails] Public key not available for ${address}`
+        );
+    }
+
+    const result = {
+        pubkey,
+        sequence: Number(decoded.sequence),
+        accountNumber: Number(decoded.accountNumber),
+    };
+
+    console.log(
+        `[getAccountDetails] Account details for ${address}:`,
+        JSON.stringify(result, null, 2)
+    );
+
+    return result;
 }
 
 export function getDidFromPubKeyBase64(pubKeyBase64: string): string {
@@ -94,24 +134,6 @@ export function getDidFromPubKeyBase64(pubKeyBase64: string): string {
     return didKey;
 }
 
-export async function createTx(
-    fromAddress: string,
-    toAddress: string,
-    amount: number
-): Promise<string | null> {
-    //   const { offlineSigner } = await connectKeplr();
-    //   const client = await SigningStargateClient.connectWithSigner(AXONE_NODE_RPC, offlineSigner);
-
-    //   const tx = await client.sendTokens(fromAddress, toAddress, [{ denom: "uaxone", amount: (amount * 1e6).toString() }], {
-    //     amount: [{ denom: "uaxone", amount: "5000" }],
-    //     gas: "200000",
-    //   });
-
-    //   return tx.transactionHash;
-
-    return "11";
-}
-
 /**
  * Returns the wallet balance in AXONE from the given address
  */
@@ -126,4 +148,44 @@ export async function fetchWalletBalance(address: string): Promise<number> {
         console.error("fetchWalletBalance - Error fetching balance:", error);
         return 0;
     }
+}
+
+export async function waitForTxConfirmation(
+    txHash: string,
+    retries = 10,
+    delayMs = 2000
+) {
+    const client = await StargateClient.connect(AXONE_NODE_RPC);
+
+    for (let i = 0; i < retries; i++) {
+        const tx = await client.getTx(txHash);
+        if (tx) return tx;
+        console.log(
+            `[ConfirmTx] Waiting for tx to confirm... (${i + 1}/${retries})`
+        );
+        await new Promise((resolve) => setTimeout(resolve, delayMs));
+    }
+
+    throw new Error(`Transaction ${txHash} not found after ${retries} retries`);
+}
+
+export function verifyADR36Signature({
+    message,
+    address,
+    pubKeyBase64,
+    signatureBase64,
+}: {
+    message: string;
+    address: string;
+    pubKeyBase64: string;
+    signatureBase64: string;
+}): boolean {
+    return verifyADR36Amino(
+        "axone", // Bech32 prefix only, not the full address
+        address, // full address
+        message,
+        fromBase64(pubKeyBase64),
+        fromBase64(signatureBase64),
+        "secp256k1"
+    );
 }
