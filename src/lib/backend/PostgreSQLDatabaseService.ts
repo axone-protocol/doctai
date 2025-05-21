@@ -27,7 +27,7 @@ export class PostgreSQLDatabaseService {
                     port: Number(process.env.STORAGE_POSTGRES_PORT),
                     username: process.env.STORAGE_POSTGRES_USER,
                     password: process.env.STORAGE_POSTGRES_PASSWORD,
-                    database: process.env.STORAGE_POSTGRES_DATABASE,
+                    database: "postgres", // Connect to default database to check if app database exists
                     entities: [],
                     synchronize: false,
                     logging: swLogsDBDebug
