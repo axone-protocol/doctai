@@ -1,26 +1,19 @@
+// src/lib/cosmos/backend/axone.ts
+
 import {
     AXONE_NODE_RPC,
-    DATAVERSE_ADDR,
-    MINIO_DID,
-    MINIO_WALLET_MNEMONIC_PHRASE,
+    MINIO_DID
 } from "@/lib/constants";
 import {
-    CosmWasmClient,
-    SigningCosmWasmClient,
+    CosmWasmClient
 } from "@cosmjs/cosmwasm-stargate";
-import { DirectSecp256k1HdWallet } from "@cosmjs/proto-signing";
-import { GasPrice } from "@cosmjs/stargate";
 import {
     fetchGovAddressFromDID,
     fetchZoneDIDFromMinIODID,
 } from "../frontend/axone";
 import {
-    formatFileSize,
-    generateRandomDidKey,
-    signCredentialWithJwk,
-    signCredentialWithNoble,
+    formatFileSize
 } from "./utils";
-import { convertToNQuads } from "./utils-jsonld-nquads";
 
 /**
  * Checks if a user is a contributor by querying the zone governance contract
@@ -75,7 +68,10 @@ export async function queryIsContributor(
             `[queryIsContributor] Result for DID ${userDID}: permitted=${isPermitted}`
         );
 
-        return isPermitted;
+        // TODO: mock response for testing
+        // const isPermitted = true;
+        // const isPermitted = false;
+        return isPermitted ;
     } catch (error) {
         console.error(
             "[queryIsContributor] Failed to check contributor permission:",
@@ -95,7 +91,6 @@ export async function queryIsContributor(
 export async function checkUploadPermission(
     userDID: string,
     file: File,
-    txHash: string | null = null
 ): Promise<boolean> {
     try {
         console.log("[checkUploadPermission] Starting permission check");
@@ -218,32 +213,6 @@ export async function checkUploadPermission(
             return false;
         }
 
-        // Step 4 - Check if user is contributor
-        console.log(
-            "[checkUploadPermission] Checking if user is a contributor"
-        );
-        const isContributor = await queryIsContributor(zoneGovAddress, userDID);
-        console.log(
-            "[checkUploadPermission] User is contributor:",
-            isContributor
-        );
-
-        // Step 5 - If not contributor, check txHash
-        if (!isContributor) {
-            console.log(
-                "[checkUploadPermission] User is not a contributor, checking payment"
-            );
-            if (!txHash) {
-                console.error(
-                    "[checkUploadPermission] Missing txHash for guest user"
-                );
-                return false;
-            }
-            const paid = await checkPaymentMock(txHash);
-            console.log("[checkUploadPermission] Payment check result:", paid);
-            return paid;
-        }
-
         console.log(
             "[checkUploadPermission] All checks passed, user has permission"
         );
@@ -267,108 +236,6 @@ export function isPermittedResult(res: any): boolean {
 
     console.log(`[isPermittedResult] Result: ${isPermitted}`);
     return isPermitted;
-}
-
-/**
- * Mock function to check payment validity
- * @param txHash Transaction hash to check
- * @returns True if payment is valid, false otherwise
- */
-export async function checkPaymentMock(txHash: string): Promise<boolean> {
-    console.log(`[checkPaymentMock] Checking payment for txHash: ${txHash}`);
-    // Replace with tx proof check
-    return true;
-}
-
-/**
- * Main function to create and publish a credential for a dataset
- * @param file File uploaded by the user
- * @returns Transaction hash on the blockchain
- */
-export async function createAndPublishCredential(file: File): Promise<{datasetDID: string, txHash: string}> {
-    try {
-        console.log(
-            `[createAndPublishCredential] Starting for file: ${file.name}`
-        );
-
-        // Generate a unique DID for the dataset
-        const datasetDID = await generateRandomDidKey();
-        console.log(
-            `[createAndPublishCredential] Generated dataset DID: ${datasetDID}`
-        );
-
-        // Get issuer information from the mnemonic phrase
-        console.log(
-            `[createAndPublishCredential] Creating wallet from mnemonic`
-        );
-        const wallet = await DirectSecp256k1HdWallet.fromMnemonic(
-            MINIO_WALLET_MNEMONIC_PHRASE,
-            { prefix: "axone" }
-        );
-
-        const [account] = await wallet.getAccounts();
-        const issuerAddress = account.address;
-        console.log(
-            `[createAndPublishCredential] Issuer address: ${issuerAddress}`
-        );
-
-        // Derive the issuer DID from the address
-        // IMPORTANT: Changed the DID format to be compatible with Axone
-        const issuerDID = MINIO_DID;
-        console.log(`[createAndPublishCredential] Issuer DID: ${issuerDID}`);
-        const issuerName = process.env.MINIO_WALLET || "minio-wallet";
-
-        // Extract file metadata
-        const fileType = file.type || "application/octet-stream";
-        const fileName = file.name || "Unknown File";
-        console.log(
-            `[createAndPublishCredential] File metadata: ${fileName}, ${fileType}, ${file.size} bytes`
-        );
-
-        // Generate the credential
-        console.log(`[createAndPublishCredential] Generating credential`);
-        const credential = generateDatasetCredential({
-            datasetDID,
-            issuerDID,
-            issuerName,
-            fileName,
-            fileType,
-            fileSize: file.size,
-        });
-        console.log(
-            `[createAndPublishCredential] Credential generated: ${JSON.stringify(
-                credential
-            )}`
-        );
-
-        // Sign the credential
-        console.log(`[createAndPublishCredential] Signing credential`);
-        const signedCredential = await signCredentialWithJwk(credential, MINIO_WALLET_MNEMONIC_PHRASE);
-        console.log(
-            `[createAndPublishCredential] Credential signed, proof: ${JSON.stringify(
-                signedCredential.proof
-            )}`
-        );
-
-        // Convert to N-Quads format
-        console.log(`[createAndPublishCredential] Converting to N-Quads`);
-        const nquads = await convertToNQuads(signedCredential);
-        console.log(
-            `[createAndPublishCredential] N-Quads generated: ${nquads}`
-        );
-
-        // Publish to the blockchain
-        console.log(`[createAndPublishCredential] Publishing to blockchain`);
-        const txHash = await publishCredentialToChain(nquads, wallet);
-        console.log(
-            `[createAndPublishCredential] Published successfully, txHash: ${txHash}`
-        );
-
-        return {datasetDID, txHash};
-    } catch (error) {
-        console.error("[createAndPublishCredential] Error:", error);
-        throw error;
-    }
 }
 
 /**
@@ -460,6 +327,7 @@ export function generateDatasetCredential({
         issuanceDate: new Date().toISOString(),
         issuer: {
             id: issuerDID,
+            // name: issuerName,
         },
     };
 
@@ -467,81 +335,4 @@ export function generateDatasetCredential({
         `[generateDatasetCredential] Credential generated successfully`
     );
     return credential;
-}
-
-/**
- * Publishes a credential to the Axone blockchain
- * @param nquads Credential in N-Quads format
- * @param wallet Issuer's wallet
- * @returns Transaction hash
- */
-async function publishCredentialToChain(
-    nquads: string,
-    wallet: DirectSecp256k1HdWallet
-): Promise<string> {
-    try {
-        console.log(
-            `[publishCredentialToChain] Publishing credential to blockchain`
-        );
-
-        // Get the first account from the wallet
-        const [account] = await wallet.getAccounts();
-        console.log(
-            `[publishCredentialToChain] Using account: ${account.address}`
-        );
-
-        // Connect to the blockchain using the wallet
-        console.log(
-            `[publishCredentialToChain] Connecting to Axone node: ${AXONE_NODE_RPC}`
-        );
-        const client = await SigningCosmWasmClient.connectWithSigner(
-            AXONE_NODE_RPC,
-            wallet,
-            {
-                gasPrice: GasPrice.fromString("0.025uaxone"),
-            }
-        );
-
-        console.log(`[publishCredentialToChain] Connected to blockchain`);
-
-        // Prepare the message for the contract
-        const claims = Buffer.from(nquads).toString("base64");
-        console.log(`[publishCredentialToChain] Claims: ${nquads}`);
-        console.log(
-            `[publishCredentialToChain] Claims prepared (${claims.length} bytes)`
-        );
-
-        const msg = {
-            submit_claims: {
-                claims: claims,
-                format: "n_quads",
-            },
-        };
-        console.log(
-            `[publishCredentialToChain] Submitting to Dataverse contract: ${DATAVERSE_ADDR}`
-        );
-
-        // Execute the transaction
-        const result = await client.execute(
-            account.address,
-            DATAVERSE_ADDR,
-            msg,
-            "auto"
-        );
-
-        console.log(
-            `[publishCredentialToChain] Transaction successful, hash: ${result.transactionHash}`
-        );
-        return result.transactionHash;
-    } catch (error) {
-        console.error(
-            "[publishCredentialToChain] Error publishing credential:",
-            error
-        );
-        throw new Error(
-            `Failed to publish credential to blockchain: ${
-                error instanceof Error ? error.message : String(error)
-            }`
-        );
-    }
 }

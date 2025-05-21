@@ -1,3 +1,5 @@
+// src/lib/cosmos/backend/utils.ts
+
 import {
     Bip39,
     EnglishMnemonic,
@@ -8,24 +10,24 @@ import {
     stringToPath,
 } from "@cosmjs/crypto";
 import { entropyToMnemonic } from "@cosmjs/crypto/build/bip39";
+import { driver as DidKeyDriver } from "@digitalbazaar/did-method-key";
+import * as Multikey from "@digitalbazaar/ed25519-multikey";
 import { Ed25519Signature2020 } from "@digitalbazaar/ed25519-signature-2020";
-import { Ed25519VerificationKey2020 } from "@digitalbazaar/ed25519-verification-key-2020";
 import {
-    issue,
-    derive,
-    verify,
-    verifyCredential,
-    createPresentation,
-    signPresentation,
+    issue
 } from "@digitalbazaar/vc";
+import * as ed from "@noble/ed25519";
 import * as ed25519 from "@noble/ed25519";
 import { hmac } from "@noble/hashes/hmac";
 import { sha256 } from "@noble/hashes/sha256";
 import { concatBytes } from "@noble/hashes/utils";
 import { etc, sign } from "@noble/secp256k1";
 import { HDKey } from "@scure/bip32";
+import { mnemonicToSeedSync } from "bip39";
+import { Buffer } from "buffer";
 import { exec } from "child_process";
 import { ec as EC } from "elliptic";
+import { hdkey } from "ethereumjs-wallet";
 import { readFile, unlink, writeFile } from "fs/promises";
 import * as jsonld from "jsonld";
 import { base58btc } from "multiformats/bases/base58";
@@ -35,13 +37,6 @@ import { canonize } from "rdf-canonize";
 import { promisify } from "util";
 import { schemaMap } from "./schemas/schemaMap";
 import { getDocumentLoader } from "./utils-jsonld-nquads";
-import * as Multikey from "@digitalbazaar/ed25519-multikey";
-import { driver as DidKeyDriver } from "@digitalbazaar/did-method-key";
-import { DataIntegrityProof } from "@digitalbazaar/data-integrity";
-import { generateMnemonic, mnemonicToSeedSync } from "bip39";
-import { hdkey } from "ethereumjs-wallet";
-import { Buffer } from "buffer";
-import * as ed from "@noble/ed25519";
 
 const execAsync = promisify(exec);
 
