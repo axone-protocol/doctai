@@ -42,7 +42,7 @@
     "@digitalbazaar/ed25519-signature-2020": "^5.4.0",
     "@digitalbazaar/ed25519-verification-key-2020": "^4.2.0",
     "@digitalbazaar/vc": "^7.2.0",
-    "@keplr-wallet/cosmos": "^0.12.230",
+    "@keplr-wallet/cosmos": "^0.12.234",
     "@noble/ed25519": "^2.2.3",
     "@noble/hashes": "^1.8.0",
     "@noble/secp256k1": "^2.2.3",
@@ -57,7 +57,7 @@
     "jsonld": "^8.3.3",
     "jsonld-document-loader": "^2.3.0",
     "jsonld-signatures": "^11.5.0",
-    "lucide-react": "^0.510.0",
+    "lucide-react": "^0.511.0",
     "multiformats": "^13.3.2",
     "next": "15.3.2",
     "next-auth": "^4.24.11",
@@ -69,7 +69,7 @@
     "sass": "^1.86.3",
     "secp256k1": "^5.0.1",
     "tweetnacl": "^1.0.3",
-    "typeorm": "^0.3.22",
+    "typeorm": "^0.3.24",
     "zustand": "^5.0.3"
   },
   "devDependencies": {
@@ -85,7 +85,7 @@
     "eslint": "^9",
     "eslint-config-next": "15.3.2",
     "ignore-loader": "^0.1.2",
-    "markdownlint-cli2": "^0.17.2",
+    "markdownlint-cli2": "^0.18.0",
     "null-loader": "^4.0.1",
     "rdf-canonize": "^4.0.1",
     "typescript": "^5"
