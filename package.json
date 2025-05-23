@@ -27,7 +27,7 @@
     "pnpm": "^10.10"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.802.0",
+    "@aws-sdk/client-s3": "^3.816.0",
     "@cosmjs/cosmwasm-stargate": "^0.33.1",
     "@cosmjs/crypto": "^0.33.1",
     "@cosmjs/encoding": "^0.33.1",
